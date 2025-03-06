@@ -1,0 +1,56 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check if user owns the patient
+    function ownsPatient(patientId) {
+      return exists(/databases/$(database)/documents/patients/$(patientId)) &&
+             get(/databases/$(database)/documents/patients/$(patientId)).data.therapistId == request.auth.uid;
+    }
+    
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow create, update: if request.auth != null && request.auth.uid == userId;
+      // No delete rule - you may want to restrict deletion of user accounts
+    }
+    
+    match /patients/{patientId} {
+      // Allow any authenticated user to read patient data
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && 
+                     request.resource.data.therapistId == request.auth.uid &&
+                     request.resource.data.size() > 2; // Basic validation
+      allow update: if request.auth != null && 
+                     resource.data.therapistId == request.auth.uid &&
+                     request.resource.data.therapistId == request.auth.uid;
+      allow delete: if request.auth != null && 
+                     resource.data.therapistId == request.auth.uid;
+    }
+    
+    match /visits/{visitId} {
+      // Allow reading individual visits
+      allow get: if request.auth != null;
+      
+      // Allow listing/querying visits for any authenticated user
+      allow list: if request.auth != null;
+      
+      allow create: if request.auth != null && 
+                     request.resource.data.therapistId == request.auth.uid &&
+                     ownsPatient(request.resource.data.patientId);
+      allow update: if request.auth != null && 
+                     resource.data.therapistId == request.auth.uid &&
+                     request.resource.data.therapistId == request.auth.uid;
+      allow delete: if request.auth != null && 
+                     resource.data.therapistId == request.auth.uid;
+    }
+    
+    match /reportCards/{reportId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && 
+                     request.resource.data.therapistId == request.auth.uid &&
+                     ownsPatient(request.resource.data.patientId);
+      // Generally no update needed for report cards as they're generated documents
+      allow delete: if request.auth != null && 
+                     resource.data.therapistId == request.auth.uid;
+    }
+  }
+}

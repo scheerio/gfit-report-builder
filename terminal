@@ -1,0 +1,3 @@
+npm init -y
+npm install react react-dom typescript @types/react @types/react-dom tailwindcss postcss autoprefixer firebase react-router-dom @headlessui/react @heroicons/react @react-pdf/renderer
+npx tailwindcss init -p 

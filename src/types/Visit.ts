@@ -8,15 +8,15 @@ export interface Visit {
   
   // Clinimetrics
   clinimetrics: {
-    bmi: number;
-    twd: number; // Tragus Wall Distance (cm)
+    bmi: number | null;
+    twd: number | null; // Tragus Wall Distance (cm)
     grip: {
-      right: number;
-      left: number;
+      right: number | null;
+      left: number | null;
     }; // Grip Strength (lbs)
     obp: {
-      systolic: number;
-      diastolic: number;
+      systolic: number | null;
+      diastolic: number | null;
     }; // Orthostatic Blood Pressure (mmHg)
     comments?: string;
     subtotal?: number;
@@ -25,20 +25,20 @@ export interface Visit {
   // ROM & Flexibility
   flexibility: {
     pke: {
-      right: number;
-      left: number;
+      right: number | null;
+      left: number | null;
     }; // Passive Knee Extension (deg)
     csr: {
-      right: number;
-      left: number;
+      right: number | null;
+      left: number | null;
     }; // Chair Sit & Reach (in)
     bst: {
-      right: number;
-      left: number;
+      right: number | null;
+      left: number | null;
     }; // Back Scratch Test (in)
     tbr: {
-      right: number;
-      left: number;
+      right: number | null;
+      left: number | null;
     }; // Total Body Rotation (in)
     comments?: string;
     subtotal?: number;
@@ -46,15 +46,15 @@ export interface Visit {
   
   // Balance
   balance: {
-    frt: number; // Functional Reach (in)
+    frt: number | null; // Functional Reach (in)
     ols: {
-      right: number;
-      left: number;
+      right: number | null;
+      left: number | null;
     }; // One Leg Stance (sec)
-    srt: number; // Step Reaction Time (ms)
+    srt: number | null; // Step Reaction Time (ms)
     pst: {
-      ap: number; // Anterior-Posterior
-      ml: number; // Medial-Lateral
+      ap: number | null; // Anterior-Posterior
+      ml: number | null; // Medial-Lateral
     }; // Postural Sway Test (mm)
     comments?: string;
     subtotal?: number;
@@ -62,14 +62,14 @@ export interface Visit {
   
   // Gait & Locomotion
   gait: {
-    tug: number; // Timed Up-and-Go (sec)
-    ncw: number; // Narrow Corridor Walk (% change)
+    tug: number | null; // Timed Up-and-Go (sec)
+    ncw: number | null; // Narrow Corridor Walk (% change)
     gst: {
-      value: number;
+      value: number | null;
       type: '6meter' | '30meter' | '45meter';
     }; // Gait Speed Test
     sct: {
-      value: number;
+      value: number | null;
       type: '5step' | '20step';
     }; // Stair Climb Test
     comments?: string;
@@ -79,21 +79,21 @@ export interface Visit {
   // Muscle Performance - Endurance
   endurance: {
     act: {
-      right: number;
-      left: number;
+      right: number | null;
+      left: number | null;
       weight: '5lbs' | '8lbs';
     }; // Arm Curl Test
     sts: {
-      value: number;
+      value: number | null;
       type: '5x' | '30sec';
     }; // Sit to Stand
     tls: {
-      value: number;
+      value: number | null;
       weight: '1lb' | '3lbs' | '5lbs';
     }; // Timed Loaded Standing
     uhr: {
-      right: number;
-      left: number;
+      right: number | null;
+      left: number | null;
     }; // Unilateral Heel Rise
     comments?: string;
     subtotal?: number;
@@ -101,19 +101,19 @@ export interface Visit {
   
   // Aerobic & Endurance
   aerobic: {
-    tms: number; // Two Minute Step
+    tms: number | null; // Two Minute Step
     mwt: {
-      distance: number;
-      speed: number;
+      distance: number | null;
+      speed: number | null;
       type: '2min' | '6min';
     }; // Walk Test
     ikd: {
-      ue: number; // Upper Extremity
-      le: number; // Lower Extremity
+      ue: number | null; // Upper Extremity
+      le: number | null; // Lower Extremity
     }; // Isokinetic Dynamometry
     pws: {
-      right: number;
-      left: number;
+      right: number | null;
+      left: number | null;
     }; // Partial Wall Sit
     comments?: string;
     subtotal?: number;
@@ -122,41 +122,41 @@ export interface Visit {
   // Muscle Performance - Power
   power: {
     bicep: {
-      rm: number; // 1 Rep Max (lbs)
-      pp: number; // Peak Power (watts)
+      rm: number | null; // 1 Rep Max (lbs)
+      pp: number | null; // Peak Power (watts)
     };
     tricep: {
-      rm: number;
-      pp: number;
+      rm: number | null;
+      pp: number | null;
     };
     back: {
-      rm: number;
-      pp: number;
+      rm: number | null;
+      pp: number | null;
     };
     chest: {
-      rm: number;
-      pp: number;
+      rm: number | null;
+      pp: number | null;
     };
     knee: {
-      rm: number;
-      pp: number;
+      rm: number | null;
+      pp: number | null;
     };
     calf: {
-      rm: number;
-      pp: number;
+      rm: number | null;
+      pp: number | null;
     };
     leg: {
-      rm: number;
-      pp: number;
+      rm: number | null;
+      pp: number | null;
     };
     hip: {
       right: {
-        rm: number;
-        pp: number;
+        rm: number | null;
+        pp: number | null;
       };
       left: {
-        rm: number;
-        pp: number;
+        rm: number | null;
+        pp: number | null;
       };
     };
     comments?: string;

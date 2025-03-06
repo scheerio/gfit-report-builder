@@ -1,17 +1,19 @@
 import React from 'react';
 import { Visit } from '../../types/Visit';
 import SectionContainer from './SectionContainer';
-import { inputStyles, textareaStyles } from '../../styles/common';
+import { inputStyles, textareaStyles, radioGroupStyles, radioLabelStyles, radioInputStyles } from '../../styles/common';
 
 interface AerobicSectionProps {
   data: Visit['aerobic'];
-  onChange: (data: Partial<Visit['aerobic']>) => void;
+  onChange?: (data: Partial<Visit['aerobic']>) => void;
+  readOnly?: boolean;
 }
 
 type AerobicKey = keyof Visit['aerobic'];
 
-const AerobicSection: React.FC<AerobicSectionProps> = ({ data, onChange }) => {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+const AerobicSection: React.FC<AerobicSectionProps> = ({ data, onChange, readOnly }) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (readOnly || !onChange) return;
     const { name, value } = e.target;
     if (name.includes('.')) {
       const [parent, child] = name.split('.') as [keyof typeof data, string];
@@ -44,25 +46,9 @@ const AerobicSection: React.FC<AerobicSectionProps> = ({ data, onChange }) => {
               value={data.tms || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="1"
+              readOnly={readOnly}
             />
-          </div>
-        </div>
-
-        <div className="sm:col-span-3">
-          <label htmlFor="mwt.type" className="block text-sm font-medium text-gray-700">
-            Walk Test Type
-          </label>
-          <div className="mt-1">
-            <select
-              name="mwt.type"
-              id="mwt.type"
-              value={data.mwt?.type || '2min'}
-              onChange={handleChange}
-              className={inputStyles}
-            >
-              <option value="2min">2 Minute</option>
-              <option value="6min">6 Minute</option>
-            </select>
           </div>
         </div>
 
@@ -78,6 +64,8 @@ const AerobicSection: React.FC<AerobicSectionProps> = ({ data, onChange }) => {
               value={data.mwt?.distance || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="0.1"
+              readOnly={readOnly}
             />
           </div>
         </div>
@@ -94,13 +82,41 @@ const AerobicSection: React.FC<AerobicSectionProps> = ({ data, onChange }) => {
               value={data.mwt?.speed || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="0.1"
+              readOnly={readOnly}
             />
+          </div>
+          <div className={radioGroupStyles}>
+            <label className={radioLabelStyles}>
+              <input
+                type="radio"
+                name="mwt.type"
+                value="2min"
+                checked={data.mwt?.type === '2min'}
+                onChange={handleChange}
+                className={radioInputStyles}
+                readOnly={readOnly}
+              />
+              2 min
+            </label>
+            <label className={radioLabelStyles}>
+              <input
+                type="radio"
+                name="mwt.type"
+                value="6min"
+                checked={data.mwt?.type === '6min'}
+                onChange={handleChange}
+                className={radioInputStyles}
+                readOnly={readOnly}
+              />
+              6 min
+            </label>
           </div>
         </div>
 
         <div className="sm:col-span-3">
           <label htmlFor="ikd.ue" className="block text-sm font-medium text-gray-700">
-            Isokinetic Dynamometry - Upper Extremity (mets)
+            Isokinetics - UE
           </label>
           <div className="mt-1">
             <input
@@ -110,13 +126,15 @@ const AerobicSection: React.FC<AerobicSectionProps> = ({ data, onChange }) => {
               value={data.ikd?.ue || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="0.1"
+              readOnly={readOnly}
             />
           </div>
         </div>
 
         <div className="sm:col-span-3">
           <label htmlFor="ikd.le" className="block text-sm font-medium text-gray-700">
-            Isokinetic Dynamometry - Lower Extremity (mets)
+            Isokinetics - LE
           </label>
           <div className="mt-1">
             <input
@@ -126,6 +144,8 @@ const AerobicSection: React.FC<AerobicSectionProps> = ({ data, onChange }) => {
               value={data.ikd?.le || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="0.1"
+              readOnly={readOnly}
             />
           </div>
         </div>
@@ -142,6 +162,8 @@ const AerobicSection: React.FC<AerobicSectionProps> = ({ data, onChange }) => {
               value={data.pws?.right || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="1"
+              readOnly={readOnly}
             />
           </div>
         </div>
@@ -158,6 +180,8 @@ const AerobicSection: React.FC<AerobicSectionProps> = ({ data, onChange }) => {
               value={data.pws?.left || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="1"
+              readOnly={readOnly}
             />
           </div>
         </div>
@@ -174,6 +198,7 @@ const AerobicSection: React.FC<AerobicSectionProps> = ({ data, onChange }) => {
               value={data.comments || ''}
               onChange={handleChange}
               className={textareaStyles}
+              readOnly={readOnly}
             />
           </div>
         </div>

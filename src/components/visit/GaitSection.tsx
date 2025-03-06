@@ -1,17 +1,19 @@
 import React from 'react';
 import { Visit } from '../../types/Visit';
 import SectionContainer from './SectionContainer';
-import { inputStyles, textareaStyles } from '../../styles/common';
+import { inputStyles, textareaStyles, radioGroupStyles, radioLabelStyles, radioInputStyles } from '../../styles/common';
 
 interface GaitSectionProps {
   data: Visit['gait'];
-  onChange: (data: Partial<Visit['gait']>) => void;
+  onChange?: (data: Partial<Visit['gait']>) => void;
+  readOnly?: boolean;
 }
 
 type GaitKey = keyof Visit['gait'];
 
-const GaitSection: React.FC<GaitSectionProps> = ({ data, onChange }) => {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+const GaitSection: React.FC<GaitSectionProps> = ({ data, onChange, readOnly }) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (readOnly || !onChange) return;
     const { name, value } = e.target;
     if (name.includes('.')) {
       const [parent, child] = name.split('.') as [keyof typeof data, string];
@@ -44,6 +46,8 @@ const GaitSection: React.FC<GaitSectionProps> = ({ data, onChange }) => {
               value={data.tug || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="0.1"
+              readOnly={readOnly}
             />
           </div>
         </div>
@@ -60,6 +64,8 @@ const GaitSection: React.FC<GaitSectionProps> = ({ data, onChange }) => {
               value={data.ncw || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="0.1"
+              readOnly={readOnly}
             />
           </div>
         </div>
@@ -76,32 +82,53 @@ const GaitSection: React.FC<GaitSectionProps> = ({ data, onChange }) => {
               value={data.gst?.value || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="0.01"
+              readOnly={readOnly}
             />
           </div>
-        </div>
-
-        <div className="sm:col-span-3">
-          <label htmlFor="gst.type" className="block text-sm font-medium text-gray-700">
-            Gait Speed Test Type
-          </label>
-          <div className="mt-1">
-            <select
-              name="gst.type"
-              id="gst.type"
-              value={data.gst?.type || '6meter'}
-              onChange={handleChange}
-              className={inputStyles}
-            >
-              <option value="6meter">6 Meter</option>
-              <option value="30meter">30 Meter</option>
-              <option value="45meter">45 Meter</option>
-            </select>
+          <div className={radioGroupStyles}>
+            <label className={radioLabelStyles}>
+              <input
+                type="radio"
+                name="gst.type"
+                value="6meter"
+                checked={data.gst?.type === '6meter'}
+                onChange={handleChange}
+                className={radioInputStyles}
+                readOnly={readOnly}
+              />
+              6 meter
+            </label>
+            <label className={radioLabelStyles}>
+              <input
+                type="radio"
+                name="gst.type"
+                value="30meter"
+                checked={data.gst?.type === '30meter'}
+                onChange={handleChange}
+                className={radioInputStyles}
+                readOnly={readOnly}
+              />
+              30 meter
+            </label>
+            <label className={radioLabelStyles}>
+              <input
+                type="radio"
+                name="gst.type"
+                value="45meter"
+                checked={data.gst?.type === '45meter'}
+                onChange={handleChange}
+                className={radioInputStyles}
+                readOnly={readOnly}
+              />
+              45 meter
+            </label>
           </div>
         </div>
 
         <div className="sm:col-span-3">
           <label htmlFor="sct.value" className="block text-sm font-medium text-gray-700">
-            Stair Climb Test (sec/step)
+            Stair Climb (sec/step)
           </label>
           <div className="mt-1">
             <input
@@ -111,25 +138,35 @@ const GaitSection: React.FC<GaitSectionProps> = ({ data, onChange }) => {
               value={data.sct?.value || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="0.01"
+              readOnly={readOnly}
             />
           </div>
-        </div>
-
-        <div className="sm:col-span-3">
-          <label htmlFor="sct.type" className="block text-sm font-medium text-gray-700">
-            Stair Climb Test Type
-          </label>
-          <div className="mt-1">
-            <select
-              name="sct.type"
-              id="sct.type"
-              value={data.sct?.type || '5step'}
-              onChange={handleChange}
-              className={inputStyles}
-            >
-              <option value="5step">5 Step</option>
-              <option value="20step">20 Step</option>
-            </select>
+          <div className={radioGroupStyles}>
+            <label className={radioLabelStyles}>
+              <input
+                type="radio"
+                name="sct.type"
+                value="5step"
+                checked={data.sct?.type === '5step'}
+                onChange={handleChange}
+                className={radioInputStyles}
+                readOnly={readOnly}
+              />
+              5 Step
+            </label>
+            <label className={radioLabelStyles}>
+              <input
+                type="radio"
+                name="sct.type"
+                value="20step"
+                checked={data.sct?.type === '20step'}
+                onChange={handleChange}
+                className={radioInputStyles}
+                readOnly={readOnly}
+              />
+              20 Step
+            </label>
           </div>
         </div>
 
@@ -145,6 +182,7 @@ const GaitSection: React.FC<GaitSectionProps> = ({ data, onChange }) => {
               value={data.comments || ''}
               onChange={handleChange}
               className={textareaStyles}
+              readOnly={readOnly}
             />
           </div>
         </div>

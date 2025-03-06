@@ -7,15 +7,25 @@ service cloud.firestore {
              get(/databases/$(database)/documents/patients/$(patientId)).data.therapistId == request.auth.uid;
     }
     
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isTherapist() {
+      return isAuthenticated() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'therapist';
+    }
+    
     match /users/{userId} {
-      allow read: if request.auth != null && request.auth.uid == userId;
-      allow create, update: if request.auth != null && request.auth.uid == userId;
+      allow read: if isAuthenticated();
+      allow write: if request.auth.uid == userId;
       // No delete rule - you may want to restrict deletion of user accounts
     }
     
     match /patients/{patientId} {
-      // Allow any authenticated user to read patient data
-      allow read: if request.auth != null;
+      allow read: if isAuthenticated();
+      allow write: if isTherapist();
       allow create: if request.auth != null && 
                      request.resource.data.therapistId == request.auth.uid &&
                      request.resource.data.size() > 2; // Basic validation
@@ -27,20 +37,13 @@ service cloud.firestore {
     }
     
     match /visits/{visitId} {
-      // Allow reading individual visits
-      allow get: if request.auth != null;
-      
-      // Allow listing/querying visits for any authenticated user
-      allow list: if request.auth != null;
-      
-      allow create: if request.auth != null && 
-                     request.resource.data.therapistId == request.auth.uid &&
-                     ownsPatient(request.resource.data.patientId);
-      allow update: if request.auth != null && 
-                     resource.data.therapistId == request.auth.uid &&
-                     request.resource.data.therapistId == request.auth.uid;
-      allow delete: if request.auth != null && 
-                     resource.data.therapistId == request.auth.uid;
+      allow read: if isAuthenticated();
+      allow create: if isTherapist() && 
+        request.resource.data.therapistId == request.auth.uid;
+      allow update: if isTherapist() && 
+        request.resource.data.therapistId == request.auth.uid;
+      allow delete: if isTherapist() && 
+        resource.data.therapistId == request.auth.uid;
     }
     
     match /reportCards/{reportId} {

@@ -1,17 +1,19 @@
 import React from 'react';
 import { Visit } from '../../types/Visit';
 import SectionContainer from './SectionContainer';
-import { inputStyles, textareaStyles } from '../../styles/common';
+import { inputStyles, textareaStyles, radioGroupStyles, radioLabelStyles, radioInputStyles } from '../../styles/common';
 
 interface EnduranceSectionProps {
   data: Visit['endurance'];
-  onChange: (data: Partial<Visit['endurance']>) => void;
+  onChange?: (data: Partial<Visit['endurance']>) => void;
+  readOnly?: boolean;
 }
 
 type EnduranceKey = keyof Visit['endurance'];
 
-const EnduranceSection: React.FC<EnduranceSectionProps> = ({ data, onChange }) => {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+const EnduranceSection: React.FC<EnduranceSectionProps> = ({ data, onChange, readOnly }) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (readOnly || !onChange) return;
     const { name, value } = e.target;
     if (name.includes('.')) {
       const [parent, child] = name.split('.') as [keyof typeof data, string];
@@ -32,7 +34,7 @@ const EnduranceSection: React.FC<EnduranceSectionProps> = ({ data, onChange }) =
       description="Record muscle endurance measurements."
     >
       <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-        <div className="sm:col-span-2">
+        <div className="sm:col-span-3">
           <label htmlFor="act.right" className="block text-sm font-medium text-gray-700">
             Arm Curl Test - Right (reps)
           </label>
@@ -44,11 +46,13 @@ const EnduranceSection: React.FC<EnduranceSectionProps> = ({ data, onChange }) =
               value={data.act?.right || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="1"
+              readOnly={readOnly}
             />
           </div>
         </div>
 
-        <div className="sm:col-span-2">
+        <div className="sm:col-span-3">
           <label htmlFor="act.left" className="block text-sm font-medium text-gray-700">
             Arm Curl Test - Left (reps)
           </label>
@@ -60,31 +64,47 @@ const EnduranceSection: React.FC<EnduranceSectionProps> = ({ data, onChange }) =
               value={data.act?.left || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="1"
+              readOnly={readOnly}
             />
           </div>
         </div>
 
-        <div className="sm:col-span-2">
-          <label htmlFor="act.weight" className="block text-sm font-medium text-gray-700">
+        <div className="sm:col-span-3">
+          <label className="block text-sm font-medium text-gray-700">
             Arm Curl Weight
           </label>
-          <div className="mt-1">
-            <select
-              name="act.weight"
-              id="act.weight"
-              value={data.act?.weight || '5lbs'}
-              onChange={handleChange}
-              className={inputStyles}
-            >
-              <option value="5lbs">5 lbs</option>
-              <option value="8lbs">8 lbs</option>
-            </select>
+          <div className={radioGroupStyles}>
+            <label className={radioLabelStyles}>
+              <input
+                type="radio"
+                name="act.weight"
+                value="5lbs"
+                checked={data.act?.weight === '5lbs'}
+                onChange={handleChange}
+                className={radioInputStyles}
+                readOnly={readOnly}
+              />
+              5 lbs
+            </label>
+            <label className={radioLabelStyles}>
+              <input
+                type="radio"
+                name="act.weight"
+                value="8lbs"
+                checked={data.act?.weight === '8lbs'}
+                onChange={handleChange}
+                className={radioInputStyles}
+                readOnly={readOnly}
+              />
+              8 lbs
+            </label>
           </div>
         </div>
 
         <div className="sm:col-span-3">
           <label htmlFor="sts.value" className="block text-sm font-medium text-gray-700">
-            Sit to Stand (count)
+            Sit to Stand
           </label>
           <div className="mt-1">
             <input
@@ -94,25 +114,35 @@ const EnduranceSection: React.FC<EnduranceSectionProps> = ({ data, onChange }) =
               value={data.sts?.value || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="0.1"
+              readOnly={readOnly}
             />
           </div>
-        </div>
-
-        <div className="sm:col-span-3">
-          <label htmlFor="sts.type" className="block text-sm font-medium text-gray-700">
-            Sit to Stand Type
-          </label>
-          <div className="mt-1">
-            <select
-              name="sts.type"
-              id="sts.type"
-              value={data.sts?.type || '5x'}
-              onChange={handleChange}
-              className={inputStyles}
-            >
-              <option value="5x">5 Repetitions</option>
-              <option value="30sec">30 Seconds</option>
-            </select>
+          <div className={radioGroupStyles}>
+            <label className={radioLabelStyles}>
+              <input
+                type="radio"
+                name="sts.type"
+                value="5x"
+                checked={data.sts?.type === '5x'}
+                onChange={handleChange}
+                className={radioInputStyles}
+                readOnly={readOnly}
+              />
+              5x (seconds)
+            </label>
+            <label className={radioLabelStyles}>
+              <input
+                type="radio"
+                name="sts.type"
+                value="30sec"
+                checked={data.sts?.type === '30sec'}
+                onChange={handleChange}
+                className={radioInputStyles}
+                readOnly={readOnly}
+              />
+              30 sec (reps)
+            </label>
           </div>
         </div>
 
@@ -128,26 +158,47 @@ const EnduranceSection: React.FC<EnduranceSectionProps> = ({ data, onChange }) =
               value={data.tls?.value || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="1"
+              readOnly={readOnly}
             />
           </div>
-        </div>
-
-        <div className="sm:col-span-3">
-          <label htmlFor="tls.weight" className="block text-sm font-medium text-gray-700">
-            TLS Weight
-          </label>
-          <div className="mt-1">
-            <select
-              name="tls.weight"
-              id="tls.weight"
-              value={data.tls?.weight || '1lb'}
-              onChange={handleChange}
-              className={inputStyles}
-            >
-              <option value="1lb">1 lb</option>
-              <option value="3lbs">3 lbs</option>
-              <option value="5lbs">5 lbs</option>
-            </select>
+          <div className={radioGroupStyles}>
+            <label className={radioLabelStyles}>
+              <input
+                type="radio"
+                name="tls.weight"
+                value="1lb"
+                checked={data.tls?.weight === '1lb'}
+                onChange={handleChange}
+                className={radioInputStyles}
+                readOnly={readOnly}
+              />
+              1 lb
+            </label>
+            <label className={radioLabelStyles}>
+              <input
+                type="radio"
+                name="tls.weight"
+                value="3lbs"
+                checked={data.tls?.weight === '3lbs'}
+                onChange={handleChange}
+                className={radioInputStyles}
+                readOnly={readOnly}
+              />
+              3 lbs
+            </label>
+            <label className={radioLabelStyles}>
+              <input
+                type="radio"
+                name="tls.weight"
+                value="5lbs"
+                checked={data.tls?.weight === '5lbs'}
+                onChange={handleChange}
+                className={radioInputStyles}
+                readOnly={readOnly}
+              />
+              5 lbs
+            </label>
           </div>
         </div>
 
@@ -163,6 +214,8 @@ const EnduranceSection: React.FC<EnduranceSectionProps> = ({ data, onChange }) =
               value={data.uhr?.right || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="1"
+              readOnly={readOnly}
             />
           </div>
         </div>
@@ -179,6 +232,8 @@ const EnduranceSection: React.FC<EnduranceSectionProps> = ({ data, onChange }) =
               value={data.uhr?.left || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="1"
+              readOnly={readOnly}
             />
           </div>
         </div>
@@ -195,6 +250,7 @@ const EnduranceSection: React.FC<EnduranceSectionProps> = ({ data, onChange }) =
               value={data.comments || ''}
               onChange={handleChange}
               className={textareaStyles}
+              readOnly={readOnly}
             />
           </div>
         </div>

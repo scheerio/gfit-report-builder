@@ -5,13 +5,19 @@ import { inputStyles, textareaStyles } from '../../styles/common';
 
 interface FlexibilitySectionProps {
   data: Visit['flexibility'];
-  onChange: (data: Partial<Visit['flexibility']>) => void;
+  onChange?: (data: Partial<Visit['flexibility']>) => void;
+  readOnly?: boolean;
 }
 
 type FlexibilityKey = keyof Visit['flexibility'];
 
-const FlexibilitySection: React.FC<FlexibilitySectionProps> = ({ data, onChange }) => {
+const FlexibilitySection: React.FC<FlexibilitySectionProps> = ({ 
+  data, 
+  onChange,
+  readOnly = false 
+}) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (readOnly || !onChange) return;
     const { name, value } = e.target;
     if (name.includes('.')) {
       const [parent, child] = name.split('.') as [keyof typeof data, string];
@@ -43,7 +49,9 @@ const FlexibilitySection: React.FC<FlexibilitySectionProps> = ({ data, onChange 
               id="pke.right"
               value={data.pke?.right || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
+              step="1"
             />
           </div>
         </div>
@@ -59,7 +67,9 @@ const FlexibilitySection: React.FC<FlexibilitySectionProps> = ({ data, onChange 
               id="pke.left"
               value={data.pke?.left || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
+              step="1"
             />
           </div>
         </div>
@@ -75,7 +85,9 @@ const FlexibilitySection: React.FC<FlexibilitySectionProps> = ({ data, onChange 
               id="csr.right"
               value={data.csr?.right || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
+              step="0.1"
             />
           </div>
         </div>
@@ -91,7 +103,9 @@ const FlexibilitySection: React.FC<FlexibilitySectionProps> = ({ data, onChange 
               id="csr.left"
               value={data.csr?.left || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
+              step="0.1"
             />
           </div>
         </div>
@@ -107,7 +121,9 @@ const FlexibilitySection: React.FC<FlexibilitySectionProps> = ({ data, onChange 
               id="bst.right"
               value={data.bst?.right || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
+              step="0.1"
             />
           </div>
         </div>
@@ -123,14 +139,16 @@ const FlexibilitySection: React.FC<FlexibilitySectionProps> = ({ data, onChange 
               id="bst.left"
               value={data.bst?.left || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
+              step="0.1"
             />
           </div>
         </div>
 
         <div className="sm:col-span-3">
           <label htmlFor="tbr.right" className="block text-sm font-medium text-gray-700">
-            Total Body Rotation - Right (in)
+            Total Body Rotation - Right (deg)
           </label>
           <div className="mt-1">
             <input
@@ -139,14 +157,15 @@ const FlexibilitySection: React.FC<FlexibilitySectionProps> = ({ data, onChange 
               id="tbr.right"
               value={data.tbr?.right || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
             />
           </div>
         </div>
 
         <div className="sm:col-span-3">
           <label htmlFor="tbr.left" className="block text-sm font-medium text-gray-700">
-            Total Body Rotation - Left (in)
+            Total Body Rotation - Left (deg)
           </label>
           <div className="mt-1">
             <input
@@ -155,7 +174,8 @@ const FlexibilitySection: React.FC<FlexibilitySectionProps> = ({ data, onChange 
               id="tbr.left"
               value={data.tbr?.left || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
             />
           </div>
         </div>
@@ -171,7 +191,8 @@ const FlexibilitySection: React.FC<FlexibilitySectionProps> = ({ data, onChange 
               rows={3}
               value={data.comments || ''}
               onChange={handleChange}
-              className={textareaStyles}
+              disabled={readOnly}
+              className={`${textareaStyles} ${readOnly ? 'bg-gray-50' : ''}`}
             />
           </div>
         </div>

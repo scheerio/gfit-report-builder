@@ -5,13 +5,15 @@ import { inputStyles, textareaStyles } from '../../styles/common';
 
 interface BalanceSectionProps {
   data: Visit['balance'];
-  onChange: (data: Partial<Visit['balance']>) => void;
+  onChange?: (data: Partial<Visit['balance']>) => void;
+  readOnly?: boolean;
 }
 
 type BalanceKey = keyof Visit['balance'];
 
-const BalanceSection: React.FC<BalanceSectionProps> = ({ data, onChange }) => {
+const BalanceSection: React.FC<BalanceSectionProps> = ({ data, onChange, readOnly }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (readOnly || !onChange) return;
     const { name, value } = e.target;
     if (name.includes('.')) {
       const [parent, child] = name.split('.') as [keyof typeof data, string];
@@ -44,6 +46,8 @@ const BalanceSection: React.FC<BalanceSectionProps> = ({ data, onChange }) => {
               value={data.frt || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="0.1"
+              readOnly={readOnly}
             />
           </div>
         </div>
@@ -60,6 +64,8 @@ const BalanceSection: React.FC<BalanceSectionProps> = ({ data, onChange }) => {
               value={data.ols?.right || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="1"
+              readOnly={readOnly}
             />
           </div>
         </div>
@@ -76,6 +82,8 @@ const BalanceSection: React.FC<BalanceSectionProps> = ({ data, onChange }) => {
               value={data.ols?.left || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="1"
+              readOnly={readOnly}
             />
           </div>
         </div>
@@ -92,6 +100,8 @@ const BalanceSection: React.FC<BalanceSectionProps> = ({ data, onChange }) => {
               value={data.srt || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="1"
+              readOnly={readOnly}
             />
           </div>
         </div>
@@ -108,6 +118,8 @@ const BalanceSection: React.FC<BalanceSectionProps> = ({ data, onChange }) => {
               value={data.pst?.ap || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="1"
+              readOnly={readOnly}
             />
           </div>
         </div>
@@ -124,6 +136,8 @@ const BalanceSection: React.FC<BalanceSectionProps> = ({ data, onChange }) => {
               value={data.pst?.ml || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="1"
+              readOnly={readOnly}
             />
           </div>
         </div>
@@ -140,6 +154,7 @@ const BalanceSection: React.FC<BalanceSectionProps> = ({ data, onChange }) => {
               value={data.comments || ''}
               onChange={handleChange}
               className={textareaStyles}
+              readOnly={readOnly}
             />
           </div>
         </div>

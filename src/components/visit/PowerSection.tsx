@@ -5,13 +5,15 @@ import { inputStyles, textareaStyles } from '../../styles/common';
 
 interface PowerSectionProps {
   data: Visit['power'];
-  onChange: (data: Partial<Visit['power']>) => void;
+  onChange?: (data: Partial<Visit['power']>) => void;
+  readOnly?: boolean;
 }
 
 type PowerKey = keyof Visit['power'];
 
-const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange }) => {
+const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange, readOnly }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (readOnly || !onChange) return;
     const { name, value } = e.target;
     if (name.includes('.')) {
       const [parent, child, subChild] = name.split('.') as [keyof typeof data, string, string | undefined];
@@ -41,13 +43,12 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange }) => {
   return (
     <SectionContainer 
       title="Muscle Performance - Power" 
-      description="Record muscle power and strength measurements."
+      description="Record 1 Rep Max (lbs) and Peak Power (watts) measurements."
     >
       <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-        {/* Bicep */}
         <div className="sm:col-span-3">
           <label htmlFor="bicep.rm" className="block text-sm font-medium text-gray-700">
-            Bicep - 1 Rep Max (lbs)
+            Bicep - 1RM (lbs)
           </label>
           <div className="mt-1">
             <input
@@ -57,6 +58,8 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange }) => {
               value={data.bicep?.rm || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="1"
+              disabled={readOnly}
             />
           </div>
         </div>
@@ -73,14 +76,15 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange }) => {
               value={data.bicep?.pp || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="1"
+              disabled={readOnly}
             />
           </div>
         </div>
 
-        {/* Tricep */}
         <div className="sm:col-span-3">
           <label htmlFor="tricep.rm" className="block text-sm font-medium text-gray-700">
-            Tricep - 1 Rep Max (lbs)
+            Tricep - 1RM (lbs)
           </label>
           <div className="mt-1">
             <input
@@ -90,6 +94,8 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange }) => {
               value={data.tricep?.rm || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="1"
+              disabled={readOnly}
             />
           </div>
         </div>
@@ -106,14 +112,15 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange }) => {
               value={data.tricep?.pp || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="1"
+              disabled={readOnly}
             />
           </div>
         </div>
 
-        {/* Back */}
         <div className="sm:col-span-3">
           <label htmlFor="back.rm" className="block text-sm font-medium text-gray-700">
-            Back - 1 Rep Max (lbs)
+            Back - 1RM (lbs)
           </label>
           <div className="mt-1">
             <input
@@ -123,6 +130,8 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange }) => {
               value={data.back?.rm || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="1"
+              disabled={readOnly}
             />
           </div>
         </div>
@@ -139,14 +148,15 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange }) => {
               value={data.back?.pp || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="1"
+              disabled={readOnly}
             />
           </div>
         </div>
 
-        {/* Chest */}
         <div className="sm:col-span-3">
           <label htmlFor="chest.rm" className="block text-sm font-medium text-gray-700">
-            Chest - 1 Rep Max (lbs)
+            Chest - 1RM (lbs)
           </label>
           <div className="mt-1">
             <input
@@ -156,6 +166,8 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange }) => {
               value={data.chest?.rm || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="1"
+              disabled={readOnly}
             />
           </div>
         </div>
@@ -172,14 +184,15 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange }) => {
               value={data.chest?.pp || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="1"
+              disabled={readOnly}
             />
           </div>
         </div>
 
-        {/* Knee */}
         <div className="sm:col-span-3">
           <label htmlFor="knee.rm" className="block text-sm font-medium text-gray-700">
-            Knee - 1 Rep Max (lbs)
+            Knee - 1RM (lbs)
           </label>
           <div className="mt-1">
             <input
@@ -189,6 +202,8 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange }) => {
               value={data.knee?.rm || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="1"
+              disabled={readOnly}
             />
           </div>
         </div>
@@ -205,14 +220,15 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange }) => {
               value={data.knee?.pp || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="1"
+              disabled={readOnly}
             />
           </div>
         </div>
 
-        {/* Calf */}
         <div className="sm:col-span-3">
           <label htmlFor="calf.rm" className="block text-sm font-medium text-gray-700">
-            Calf - 1 Rep Max (lbs)
+            Calf - 1RM (lbs)
           </label>
           <div className="mt-1">
             <input
@@ -222,6 +238,8 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange }) => {
               value={data.calf?.rm || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="1"
+              disabled={readOnly}
             />
           </div>
         </div>
@@ -238,14 +256,51 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange }) => {
               value={data.calf?.pp || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="1"
+              disabled={readOnly}
             />
           </div>
         </div>
 
-        {/* Hip */}
+        <div className="sm:col-span-3">
+          <label htmlFor="leg.rm" className="block text-sm font-medium text-gray-700">
+            Leg - 1RM (lbs)
+          </label>
+          <div className="mt-1">
+            <input
+              type="number"
+              name="leg.rm"
+              id="leg.rm"
+              value={data.leg?.rm || ''}
+              onChange={handleChange}
+              className={inputStyles}
+              step="1"
+              disabled={readOnly}
+            />
+          </div>
+        </div>
+
+        <div className="sm:col-span-3">
+          <label htmlFor="leg.pp" className="block text-sm font-medium text-gray-700">
+            Leg - Peak Power (watts)
+          </label>
+          <div className="mt-1">
+            <input
+              type="number"
+              name="leg.pp"
+              id="leg.pp"
+              value={data.leg?.pp || ''}
+              onChange={handleChange}
+              className={inputStyles}
+              step="1"
+              disabled={readOnly}
+            />
+          </div>
+        </div>
+
         <div className="sm:col-span-3">
           <label htmlFor="hip.right.rm" className="block text-sm font-medium text-gray-700">
-            Hip Right - 1 Rep Max (lbs)
+            Hip - Right 1RM (lbs)
           </label>
           <div className="mt-1">
             <input
@@ -255,13 +310,15 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange }) => {
               value={data.hip?.right?.rm || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="1"
+              disabled={readOnly}
             />
           </div>
         </div>
 
         <div className="sm:col-span-3">
           <label htmlFor="hip.right.pp" className="block text-sm font-medium text-gray-700">
-            Hip Right - Peak Power (watts)
+            Hip - Right Peak Power (watts)
           </label>
           <div className="mt-1">
             <input
@@ -271,13 +328,15 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange }) => {
               value={data.hip?.right?.pp || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="1"
+              disabled={readOnly}
             />
           </div>
         </div>
 
         <div className="sm:col-span-3">
           <label htmlFor="hip.left.rm" className="block text-sm font-medium text-gray-700">
-            Hip Left - 1 Rep Max (lbs)
+            Hip - Left 1RM (lbs)
           </label>
           <div className="mt-1">
             <input
@@ -287,13 +346,15 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange }) => {
               value={data.hip?.left?.rm || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="1"
+              disabled={readOnly}
             />
           </div>
         </div>
 
         <div className="sm:col-span-3">
           <label htmlFor="hip.left.pp" className="block text-sm font-medium text-gray-700">
-            Hip Left - Peak Power (watts)
+            Hip - Left Peak Power (watts)
           </label>
           <div className="mt-1">
             <input
@@ -303,6 +364,8 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange }) => {
               value={data.hip?.left?.pp || ''}
               onChange={handleChange}
               className={inputStyles}
+              step="1"
+              disabled={readOnly}
             />
           </div>
         </div>
@@ -319,6 +382,7 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange }) => {
               value={data.comments || ''}
               onChange={handleChange}
               className={textareaStyles}
+              disabled={readOnly}
             />
           </div>
         </div>

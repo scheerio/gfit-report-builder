@@ -5,13 +5,19 @@ import { inputStyles, textareaStyles } from '../../styles/common';
 
 interface ClinimetricsSectionProps {
   data: Visit['clinimetrics'];
-  onChange: (data: Partial<Visit['clinimetrics']>) => void;
+  onChange?: (data: Partial<Visit['clinimetrics']>) => void;
+  readOnly?: boolean;
 }
 
 type ClinimetricsKey = keyof Visit['clinimetrics'];
 
-const ClinimetricsSection: React.FC<ClinimetricsSectionProps> = ({ data, onChange }) => {
+const ClinimetricsSection: React.FC<ClinimetricsSectionProps> = ({ 
+  data, 
+  onChange,
+  readOnly = false 
+}) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (readOnly || !onChange) return;
     const { name, value } = e.target;
     if (name.includes('.')) {
       const [parent, child] = name.split('.') as [keyof typeof data, string];
@@ -43,7 +49,9 @@ const ClinimetricsSection: React.FC<ClinimetricsSectionProps> = ({ data, onChang
               id="bmi"
               value={data.bmi || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
+              step="0.1"
             />
           </div>
         </div>
@@ -59,7 +67,9 @@ const ClinimetricsSection: React.FC<ClinimetricsSectionProps> = ({ data, onChang
               id="twd"
               value={data.twd || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
+              step="0.1"
             />
           </div>
         </div>
@@ -75,7 +85,8 @@ const ClinimetricsSection: React.FC<ClinimetricsSectionProps> = ({ data, onChang
               id="grip.right"
               value={data.grip?.right || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
             />
           </div>
         </div>
@@ -91,14 +102,15 @@ const ClinimetricsSection: React.FC<ClinimetricsSectionProps> = ({ data, onChang
               id="grip.left"
               value={data.grip?.left || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
             />
           </div>
         </div>
 
         <div className="sm:col-span-3">
           <label htmlFor="obp.systolic" className="block text-sm font-medium text-gray-700">
-            Blood Pressure - Systolic (mmHg)
+            Orthostatic Blood Pressure - Systolic
           </label>
           <div className="mt-1">
             <input
@@ -107,14 +119,15 @@ const ClinimetricsSection: React.FC<ClinimetricsSectionProps> = ({ data, onChang
               id="obp.systolic"
               value={data.obp?.systolic || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
             />
           </div>
         </div>
 
         <div className="sm:col-span-3">
           <label htmlFor="obp.diastolic" className="block text-sm font-medium text-gray-700">
-            Blood Pressure - Diastolic (mmHg)
+            Orthostatic Blood Pressure - Diastolic
           </label>
           <div className="mt-1">
             <input
@@ -123,7 +136,8 @@ const ClinimetricsSection: React.FC<ClinimetricsSectionProps> = ({ data, onChang
               id="obp.diastolic"
               value={data.obp?.diastolic || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
             />
           </div>
         </div>
@@ -139,7 +153,8 @@ const ClinimetricsSection: React.FC<ClinimetricsSectionProps> = ({ data, onChang
               rows={3}
               value={data.comments || ''}
               onChange={handleChange}
-              className={textareaStyles}
+              disabled={readOnly}
+              className={`${textareaStyles} ${readOnly ? 'bg-gray-50' : ''}`}
             />
           </div>
         </div>

@@ -25,7 +25,7 @@ function App() {
           <Route path="/patients/new" element={<PrivateRoute><NewPatient /></PrivateRoute>} />
           <Route path="/patients/:id" element={<PrivateRoute><PatientDetails /></PrivateRoute>} />
           <Route path="/patients/:id/edit" element={<PrivateRoute><EditPatient /></PrivateRoute>} />
-          <Route path="/patients/:id/visits/new" element={<PrivateRoute><NewVisit /></PrivateRoute>} />
+          <Route path="/patients/:patientId/visits/new" element={<PrivateRoute><NewVisit /></PrivateRoute>} />
           <Route path="/patients/:id/visits/:visitId" element={<PrivateRoute><VisitDetails /></PrivateRoute>} />
           <Route path="/patients/:id/visits/:visitId/edit" element={<PrivateRoute><EditVisit /></PrivateRoute>} />
           <Route path="/patients/:id/report" element={<PrivateRoute><GenerateReport /></PrivateRoute>} />

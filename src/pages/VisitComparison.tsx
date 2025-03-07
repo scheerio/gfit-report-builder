@@ -10,11 +10,57 @@ import { PDFDownloadLink, Document, Page, Text, View, StyleSheet } from '@react-
 interface Visit {
   id: string;
   date: { toDate: () => Date };
+  clinimetrics: {
+    bmi: number;
+    twd: number;
+    grip: { right: number; left: number };
+    obp: { systolic: number; diastolic: number };
+    comments: string;
+  };
+  flexibility: {
+    pke: { right: number; left: number };
+    csr: { right: number; left: number };
+    bst: { right: number; left: number };
+    tbr: { right: number; left: number };
+    comments: string;
+  };
   balance: {
     frt: number;
     ols: { right: number; left: number };
     srt: number;
     pst: { ap: number; ml: number };
+    comments: string;
+  };
+  gait: {
+    tug: number;
+    ncw: number;
+    gst: { value: number; type: '6meter' | '30meter' | '45meter' };
+    sct: { value: number; type: '5step' | '20step' };
+    comments: string;
+  };
+  endurance: {
+    act: { right: number; left: number; weight: '5lbs' | '8lbs' };
+    sts: { value: number; type: '5x' | '30sec' };
+    tls: { value: number; weight: '1lb' | '3lbs' | '5lbs' };
+    uhr: { right: number; left: number };
+    comments: string;
+  };
+  aerobic: {
+    tms: number;
+    mwt: { distance: number; speed: number; type: '2min' | '6min' };
+    ikd: { ue: number; le: number };
+    pws: { right: number; left: number };
+    comments: string;
+  };
+  power: {
+    bicep: { rm: number; pp: number };
+    tricep: { rm: number; pp: number };
+    back: { rm: number; pp: number };
+    chest: { rm: number; pp: number };
+    knee: { rm: number; pp: number };
+    calf: { rm: number; pp: number };
+    leg: { rm: number; pp: number };
+    hip: { right: { rm: number; pp: number }; left: { rm: number; pp: number } };
     comments: string;
   };
 }
@@ -75,8 +121,141 @@ const ComparisonDocument = ({ visits }: { visits: Visit[] }) => (
         ))}
       </View>
 
-      <Text style={styles.header}>Test Results</Text>
+      {/* Clinimetrics Section */}
+      <Text style={styles.header}>Clinimetrics</Text>
       
+      <View style={styles.row}>
+        <Text style={styles.label}>BMI</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.clinimetrics?.bmi || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Target Walking Distance</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.clinimetrics?.twd || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Grip Strength - Right</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.clinimetrics?.grip?.right || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Grip Strength - Left</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.clinimetrics?.grip?.left || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Blood Pressure - Systolic</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.clinimetrics?.obp?.systolic || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Blood Pressure - Diastolic</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.clinimetrics?.obp?.diastolic || '-'}
+          </Text>
+        ))}
+      </View>
+
+      {/* Flexibility Section */}
+      <Text style={styles.header}>Flexibility</Text>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>PKE - Right</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.flexibility?.pke?.right || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>PKE - Left</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.flexibility?.pke?.left || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>CSR - Right</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.flexibility?.csr?.right || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>CSR - Left</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.flexibility?.csr?.left || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>BST - Right</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.flexibility?.bst?.right || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>BST - Left</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.flexibility?.bst?.left || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>TBR - Right</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.flexibility?.tbr?.right || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>TBR - Left</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.flexibility?.tbr?.left || '-'}
+          </Text>
+        ))}
+      </View>
+
+      {/* Balance Section */}
+      <Text style={styles.header}>Balance</Text>
+
       <View style={styles.row}>
         <Text style={styles.label}>FRT Score</Text>
         {visits.map((visit, i) => (
@@ -87,7 +266,7 @@ const ComparisonDocument = ({ visits }: { visits: Visit[] }) => (
       </View>
 
       <View style={styles.row}>
-        <Text style={styles.label}>OLS Right</Text>
+        <Text style={styles.label}>OLS - Right</Text>
         {visits.map((visit, i) => (
           <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
             {visit.balance?.ols?.right || '-'}
@@ -96,7 +275,7 @@ const ComparisonDocument = ({ visits }: { visits: Visit[] }) => (
       </View>
 
       <View style={styles.row}>
-        <Text style={styles.label}>OLS Left</Text>
+        <Text style={styles.label}>OLS - Left</Text>
         {visits.map((visit, i) => (
           <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
             {visit.balance?.ols?.left || '-'}
@@ -114,7 +293,7 @@ const ComparisonDocument = ({ visits }: { visits: Visit[] }) => (
       </View>
 
       <View style={styles.row}>
-        <Text style={styles.label}>PST AP</Text>
+        <Text style={styles.label}>PST - AP</Text>
         {visits.map((visit, i) => (
           <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
             {visit.balance?.pst?.ap || '-'}
@@ -123,7 +302,7 @@ const ComparisonDocument = ({ visits }: { visits: Visit[] }) => (
       </View>
 
       <View style={styles.row}>
-        <Text style={styles.label}>PST ML</Text>
+        <Text style={styles.label}>PST - ML</Text>
         {visits.map((visit, i) => (
           <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
             {visit.balance?.pst?.ml || '-'}
@@ -131,12 +310,340 @@ const ComparisonDocument = ({ visits }: { visits: Visit[] }) => (
         ))}
       </View>
 
+      {/* Gait Section */}
+      <Text style={styles.header}>Gait & Locomotion</Text>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Timed Up-and-Go</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.gait?.tug || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Normal Comfortable Walk</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.gait?.ncw || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Gait Speed Test</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.gait?.gst?.value || '-'} ({visit.gait?.gst?.type || '-'})
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Stair Climb Test</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.gait?.sct?.value || '-'} ({visit.gait?.sct?.type || '-'})
+          </Text>
+        ))}
+      </View>
+
+      {/* Endurance Section */}
+      <Text style={styles.header}>Endurance</Text>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Arm Curl Test - Right</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.endurance?.act?.right || '-'} ({visit.endurance?.act?.weight || '-'})
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Arm Curl Test - Left</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.endurance?.act?.left || '-'} ({visit.endurance?.act?.weight || '-'})
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Sit-to-Stand Test</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.endurance?.sts?.value || '-'} ({visit.endurance?.sts?.type || '-'})
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Toe Lift Series</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.endurance?.tls?.value || '-'} ({visit.endurance?.tls?.weight || '-'})
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Upper Hand Reach - Right</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.endurance?.uhr?.right || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Upper Hand Reach - Left</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.endurance?.uhr?.left || '-'}
+          </Text>
+        ))}
+      </View>
+
+      {/* Aerobic Section */}
+      <Text style={styles.header}>Aerobic</Text>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Two Minute Step</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.aerobic?.tms || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Modified Walk Test Distance</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.aerobic?.mwt?.distance || '-'} ({visit.aerobic?.mwt?.type || '-'})
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Modified Walk Test Speed</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.aerobic?.mwt?.speed || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>IKD Upper Extremity</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.aerobic?.ikd?.ue || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>IKD Lower Extremity</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.aerobic?.ikd?.le || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Partial Wall Sit - Right</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.aerobic?.pws?.right || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Partial Wall Sit - Left</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.aerobic?.pws?.left || '-'}
+          </Text>
+        ))}
+      </View>
+
+      {/* Power Section */}
+      <Text style={styles.header}>Power</Text>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Bicep - 1RM</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.power?.bicep?.rm || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Bicep - Peak Power</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.power?.bicep?.pp || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Tricep - 1RM</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.power?.tricep?.rm || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Tricep - Peak Power</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.power?.tricep?.pp || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Back - 1RM</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.power?.back?.rm || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Back - Peak Power</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.power?.back?.pp || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Chest - 1RM</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.power?.chest?.rm || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Chest - Peak Power</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.power?.chest?.pp || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Knee - 1RM</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.power?.knee?.rm || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Knee - Peak Power</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.power?.knee?.pp || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Calf - 1RM</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.power?.calf?.rm || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Calf - Peak Power</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.power?.calf?.pp || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Leg - 1RM</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.power?.leg?.rm || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Leg - Peak Power</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.power?.leg?.pp || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Hip Right - 1RM</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.power?.hip?.right?.rm || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Hip Right - Peak Power</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.power?.hip?.right?.pp || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Hip Left - 1RM</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.power?.hip?.left?.rm || '-'}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.label}>Hip Left - Peak Power</Text>
+        {visits.map((visit, i) => (
+          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
+            {visit.power?.hip?.left?.pp || '-'}
+          </Text>
+        ))}
+      </View>
+
+      {/* Comments Sections */}
       <Text style={styles.header}>Comments</Text>
       {visits.map((visit, i) => (
         <View key={i} style={styles.row}>
           <Text style={styles.label}>Visit {i + 1}</Text>
           <Text style={i === 0 ? styles.value1 : styles.value2}>
-            {visit.balance?.comments || '-'}
+            {visit.clinimetrics?.comments || '-'}
           </Text>
         </View>
       ))}
@@ -276,6 +783,263 @@ const VisitComparison = () => {
                   <div className="font-medium text-gray-500">Comments</div>
                   {visits.map((visit, i) => (
                     <div key={i} className="text-gray-900">{visit.balance?.comments || '-'}</div>
+                  ))}
+
+                  {/* Clinimetrics Section */}
+                  <div className="font-medium text-gray-500 col-span-3 mt-4">Clinimetrics</div>
+                  <div className="font-medium text-gray-500">BMI</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.clinimetrics?.bmi || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Target Walking Distance</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.clinimetrics?.twd || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Grip Strength - Right</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.clinimetrics?.grip?.right || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Grip Strength - Left</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.clinimetrics?.grip?.left || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Blood Pressure - Systolic</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.clinimetrics?.obp?.systolic || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Blood Pressure - Diastolic</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.clinimetrics?.obp?.diastolic || '-'}</div>
+                  ))}
+
+                  {/* Flexibility Section */}
+                  <div className="font-medium text-gray-500 col-span-3 mt-4">Flexibility</div>
+                  <div className="font-medium text-gray-500">PKE - Right</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.flexibility?.pke?.right || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">PKE - Left</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.flexibility?.pke?.left || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">CSR - Right</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.flexibility?.csr?.right || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">CSR - Left</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.flexibility?.csr?.left || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">BST - Right</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.flexibility?.bst?.right || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">BST - Left</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.flexibility?.bst?.left || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">TBR - Right</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.flexibility?.tbr?.right || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">TBR - Left</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.flexibility?.tbr?.left || '-'}</div>
+                  ))}
+
+                  {/* Gait Section */}
+                  <div className="font-medium text-gray-500 col-span-3 mt-4">Gait & Locomotion</div>
+                  <div className="font-medium text-gray-500">Timed Up-and-Go</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.gait?.tug || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Normal Comfortable Walk</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.gait?.ncw || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Gait Speed Test Value</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.gait?.gst?.value || '-'} ({visit.gait?.gst?.type || '-'})</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Stair Climb Test Value</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.gait?.sct?.value || '-'} ({visit.gait?.sct?.type || '-'})</div>
+                  ))}
+
+                  {/* Endurance Section */}
+                  <div className="font-medium text-gray-500 col-span-3 mt-4">Endurance</div>
+                  <div className="font-medium text-gray-500">Arm Curl Test - Right</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.endurance?.act?.right || '-'} ({visit.endurance?.act?.weight || '-'})</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Arm Curl Test - Left</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.endurance?.act?.left || '-'} ({visit.endurance?.act?.weight || '-'})</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Sit-to-Stand Test</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.endurance?.sts?.value || '-'} ({visit.endurance?.sts?.type || '-'})</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Toe Lift Series</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.endurance?.tls?.value || '-'} ({visit.endurance?.tls?.weight || '-'})</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Upper Hand Reach - Right</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.endurance?.uhr?.right || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Upper Hand Reach - Left</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.endurance?.uhr?.left || '-'}</div>
+                  ))}
+
+                  {/* Aerobic Section */}
+                  <div className="font-medium text-gray-500 col-span-3 mt-4">Aerobic</div>
+                  <div className="font-medium text-gray-500">Two Minute Step</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.aerobic?.tms || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Modified Walk Test Distance</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.aerobic?.mwt?.distance || '-'} ({visit.aerobic?.mwt?.type || '-'})</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Modified Walk Test Speed</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.aerobic?.mwt?.speed || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">IKD Upper Extremity</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.aerobic?.ikd?.ue || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">IKD Lower Extremity</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.aerobic?.ikd?.le || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Partial Wall Sit - Right</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.aerobic?.pws?.right || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Partial Wall Sit - Left</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.aerobic?.pws?.left || '-'}</div>
+                  ))}
+
+                  {/* Power Section */}
+                  <div className="font-medium text-gray-500 col-span-3 mt-4">Power</div>
+                  <div className="font-medium text-gray-500">Bicep - 1RM</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.power?.bicep?.rm || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Bicep - Peak Power</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.power?.bicep?.pp || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Tricep - 1RM</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.power?.tricep?.rm || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Tricep - Peak Power</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.power?.tricep?.pp || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Back - 1RM</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.power?.back?.rm || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Back - Peak Power</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.power?.back?.pp || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Chest - 1RM</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.power?.chest?.rm || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Chest - Peak Power</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.power?.chest?.pp || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Knee - 1RM</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.power?.knee?.rm || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Knee - Peak Power</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.power?.knee?.pp || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Calf - 1RM</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.power?.calf?.rm || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Calf - Peak Power</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.power?.calf?.pp || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Leg - 1RM</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.power?.leg?.rm || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Leg - Peak Power</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.power?.leg?.pp || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Hip Right - 1RM</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.power?.hip?.right?.rm || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Hip Right - Peak Power</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.power?.hip?.right?.pp || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Hip Left - 1RM</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.power?.hip?.left?.rm || '-'}</div>
+                  ))}
+
+                  <div className="font-medium text-gray-500">Hip Left - Peak Power</div>
+                  {visits.map((visit, i) => (
+                    <div key={i} className="text-gray-900">{visit.power?.hip?.left?.pp || '-'}</div>
                   ))}
                 </div>
               </div>

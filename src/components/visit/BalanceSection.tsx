@@ -48,6 +48,10 @@ const BalanceSection: React.FC<BalanceSectionProps> = ({ data, onChange, readOnl
     }
   };
 
+  const isNT = (value: number | null | undefined | 'NT'): boolean => {
+    return value === 'NT' || value === null || value === undefined;
+  };
+
   return (
     <SectionContainer 
       title="Balance" 
@@ -58,18 +62,32 @@ const BalanceSection: React.FC<BalanceSectionProps> = ({ data, onChange, readOnl
           <label htmlFor="frt" className="block text-sm font-medium text-gray-700">
             Functional Reach Test (in)
           </label>
-          <div className="mt-1">
+          <div className="mt-1 flex items-center gap-3">
             <input
               type="number"
               name="frt"
               id="frt"
               required
-              value={data.frt || ''}
+              disabled={readOnly || isNT(data.frt)}
+              value={isNT(data.frt) ? '' : (data.frt || '')}
               onChange={handleChange}
-              disabled={readOnly}
-              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
+              className={`${inputStyles} ${readOnly || isNT(data.frt) ? 'bg-gray-50' : ''}`}
               step="0.1"
             />
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="frt-nt"
+                name="frt-nt"
+                checked={isNT(data.frt)}
+                onChange={handleChange}
+                disabled={readOnly}
+                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              />
+              <label htmlFor="frt-nt" className="ml-2 text-sm text-gray-700">
+                NT
+              </label>
+            </div>
           </div>
         </div>
 
@@ -77,18 +95,32 @@ const BalanceSection: React.FC<BalanceSectionProps> = ({ data, onChange, readOnl
           <label htmlFor="ols.right" className="block text-sm font-medium text-gray-700">
             One Leg Stance - Right (sec)
           </label>
-          <div className="mt-1">
+          <div className="mt-1 flex items-center gap-3">
             <input
               type="number"
               name="ols.right"
               id="ols.right"
               required
-              value={data.ols?.right || ''}
+              disabled={readOnly || isNT(data.ols?.right)}
+              value={isNT(data.ols?.right) ? '' : (data.ols?.right || '')}
               onChange={handleChange}
-              disabled={readOnly}
-              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
+              className={`${inputStyles} ${readOnly || isNT(data.ols?.right) ? 'bg-gray-50' : ''}`}
               step="1"
             />
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="ols.right-nt"
+                name="ols.right-nt"
+                checked={isNT(data.ols?.right)}
+                onChange={handleChange}
+                disabled={readOnly}
+                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              />
+              <label htmlFor="ols.right-nt" className="ml-2 text-sm text-gray-700">
+                NT
+              </label>
+            </div>
           </div>
         </div>
 
@@ -96,18 +128,32 @@ const BalanceSection: React.FC<BalanceSectionProps> = ({ data, onChange, readOnl
           <label htmlFor="ols.left" className="block text-sm font-medium text-gray-700">
             One Leg Stance - Left (sec)
           </label>
-          <div className="mt-1">
+          <div className="mt-1 flex items-center gap-3">
             <input
               type="number"
               name="ols.left"
               id="ols.left"
               required
-              value={data.ols?.left || ''}
+              disabled={readOnly || isNT(data.ols?.left)}
+              value={isNT(data.ols?.left) ? '' : (data.ols?.left || '')}
               onChange={handleChange}
-              disabled={readOnly}
-              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
+              className={`${inputStyles} ${readOnly || isNT(data.ols?.left) ? 'bg-gray-50' : ''}`}
               step="1"
             />
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="ols.left-nt"
+                name="ols.left-nt"
+                checked={isNT(data.ols?.left)}
+                onChange={handleChange}
+                disabled={readOnly}
+                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              />
+              <label htmlFor="ols.left-nt" className="ml-2 text-sm text-gray-700">
+                NT
+              </label>
+            </div>
           </div>
         </div>
 
@@ -115,18 +161,32 @@ const BalanceSection: React.FC<BalanceSectionProps> = ({ data, onChange, readOnl
           <label htmlFor="srt" className="block text-sm font-medium text-gray-700">
             Step Reaction Time (ms)
           </label>
-          <div className="mt-1">
+          <div className="mt-1 flex items-center gap-3">
             <input
               type="number"
               name="srt"
               id="srt"
               required
-              value={data.srt || ''}
+              disabled={readOnly || isNT(data.srt)}
+              value={isNT(data.srt) ? '' : (data.srt || '')}
               onChange={handleChange}
-              disabled={readOnly}
-              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
+              className={`${inputStyles} ${readOnly || isNT(data.srt) ? 'bg-gray-50' : ''}`}
               step="1"
             />
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="srt-nt"
+                name="srt-nt"
+                checked={isNT(data.srt)}
+                onChange={handleChange}
+                disabled={readOnly}
+                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              />
+              <label htmlFor="srt-nt" className="ml-2 text-sm text-gray-700">
+                NT
+              </label>
+            </div>
           </div>
         </div>
 
@@ -134,18 +194,32 @@ const BalanceSection: React.FC<BalanceSectionProps> = ({ data, onChange, readOnl
           <label htmlFor="pst.ap" className="block text-sm font-medium text-gray-700">
             Postural Sway Test - AP (mm)
           </label>
-          <div className="mt-1">
+          <div className="mt-1 flex items-center gap-3">
             <input
               type="number"
               name="pst.ap"
               id="pst.ap"
               required
-              value={data.pst?.ap || ''}
+              disabled={readOnly || isNT(data.pst?.ap)}
+              value={isNT(data.pst?.ap) ? '' : (data.pst?.ap || '')}
               onChange={handleChange}
-              disabled={readOnly}
-              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
+              className={`${inputStyles} ${readOnly || isNT(data.pst?.ap) ? 'bg-gray-50' : ''}`}
               step="1"
             />
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="pst.ap-nt"
+                name="pst.ap-nt"
+                checked={isNT(data.pst?.ap)}
+                onChange={handleChange}
+                disabled={readOnly}
+                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              />
+              <label htmlFor="pst.ap-nt" className="ml-2 text-sm text-gray-700">
+                NT
+              </label>
+            </div>
           </div>
         </div>
 
@@ -153,18 +227,32 @@ const BalanceSection: React.FC<BalanceSectionProps> = ({ data, onChange, readOnl
           <label htmlFor="pst.ml" className="block text-sm font-medium text-gray-700">
             Postural Sway Test - ML (mm)
           </label>
-          <div className="mt-1">
+          <div className="mt-1 flex items-center gap-3">
             <input
               type="number"
               name="pst.ml"
               id="pst.ml"
               required
-              value={data.pst?.ml || ''}
+              disabled={readOnly || isNT(data.pst?.ml)}
+              value={isNT(data.pst?.ml) ? '' : (data.pst?.ml || '')}
               onChange={handleChange}
-              disabled={readOnly}
-              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
+              className={`${inputStyles} ${readOnly || isNT(data.pst?.ml) ? 'bg-gray-50' : ''}`}
               step="1"
             />
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="pst.ml-nt"
+                name="pst.ml-nt"
+                checked={isNT(data.pst?.ml)}
+                onChange={handleChange}
+                disabled={readOnly}
+                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              />
+              <label htmlFor="pst.ml-nt" className="ml-2 text-sm text-gray-700">
+                NT
+              </label>
+            </div>
           </div>
         </div>
 

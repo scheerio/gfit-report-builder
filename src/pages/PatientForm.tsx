@@ -28,6 +28,11 @@ const PatientForm = () => {
       setLoading(true);
       setError('');
 
+      if (!formData.emrId.trim()) {
+        setError('EMR ID is required');
+        return;
+      }
+
       const patientData = {
         ...formData,
         dateOfBirth: new Date(formData.dateOfBirth),
@@ -77,8 +82,8 @@ const PatientForm = () => {
             </div>
           )}
 
-          <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
-            <div>
+          <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+            <div className="sm:col-span-3">
               <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
                 First Name
               </label>
@@ -95,7 +100,7 @@ const PatientForm = () => {
               </div>
             </div>
 
-            <div>
+            <div className="sm:col-span-3">
               <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
                 Last Name
               </label>
@@ -112,7 +117,7 @@ const PatientForm = () => {
               </div>
             </div>
 
-            <div>
+            <div className="sm:col-span-3">
               <label htmlFor="emrId" className="block text-sm font-medium text-gray-700">
                 EMR ID
               </label>
@@ -129,7 +134,7 @@ const PatientForm = () => {
               </div>
             </div>
 
-            <div>
+            <div className="sm:col-span-3">
               <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700">
                 Date of Birth
               </label>
@@ -146,7 +151,7 @@ const PatientForm = () => {
               </div>
             </div>
 
-            <div>
+            <div className="sm:col-span-3">
               <label htmlFor="gender" className="block text-sm font-medium text-gray-700">
                 Gender
               </label>
@@ -167,7 +172,7 @@ const PatientForm = () => {
               </div>
             </div>
 
-            <div>
+            <div className="sm:col-span-3">
               <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
                 Phone
               </label>
@@ -176,7 +181,6 @@ const PatientForm = () => {
                   type="tel"
                   name="phone"
                   id="phone"
-                  required
                   value={formData.phone}
                   onChange={handleChange}
                   className="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"
@@ -184,7 +188,7 @@ const PatientForm = () => {
               </div>
             </div>
 
-            <div className="sm:col-span-2">
+            <div className="sm:col-span-3">
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email
               </label>
@@ -200,7 +204,7 @@ const PatientForm = () => {
               </div>
             </div>
 
-            <div className="sm:col-span-2">
+            <div className="sm:col-span-3">
               <label htmlFor="address" className="block text-sm font-medium text-gray-700">
                 Address
               </label>
@@ -216,7 +220,7 @@ const PatientForm = () => {
               </div>
             </div>
 
-            <div className="sm:col-span-2">
+            <div className="sm:col-span-3">
               <label htmlFor="medicalHistory" className="block text-sm font-medium text-gray-700">
                 Medical History
               </label>

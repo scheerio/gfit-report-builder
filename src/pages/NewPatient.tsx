@@ -49,6 +49,11 @@ const NewPatient = () => {
       return;
     }
 
+    if (!formData.emrId.trim()) {
+      setError('EMR ID is required');
+      return;
+    }
+
     try {
       setLoading(true);
       setError('');
@@ -164,6 +169,7 @@ const NewPatient = () => {
                         type="text"
                         name="emrId"
                         id="emrId"
+                        required
                         value={formData.emrId}
                         onChange={handleChange}
                         className="max-w-lg block w-full shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:max-w-xs sm:text-sm border-gray-300 rounded-md"

@@ -14,17 +14,37 @@ type BalanceKey = keyof Visit['balance'];
 const BalanceSection: React.FC<BalanceSectionProps> = ({ data, onChange, readOnly }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (readOnly || !onChange) return;
-    const { name, value } = e.target;
-    if (name.includes('.')) {
-      const [parent, child] = name.split('.') as [keyof typeof data, string];
-      onChange({
-        [parent]: {
-          ...(data[parent] as object),
-          [child]: Number(value)
-        }
-      });
+    const { name, value, type } = e.target;
+    
+    if (type === 'checkbox') {
+      const fieldName = name.replace('-nt', '');
+      if (name.includes('.')) {
+        const [parent, child] = fieldName.split('.') as [keyof Visit['balance'], string];
+        const currentParentValue = data[parent] || {};
+        onChange({
+          [parent]: {
+            ...currentParentValue,
+            [child]: (e.target as HTMLInputElement).checked ? 'NT' : ''
+          }
+        });
+      } else {
+        onChange({ [fieldName as keyof Visit['balance']]: (e.target as HTMLInputElement).checked ? 'NT' : '' });
+      }
+    } else if (name === 'comments') {
+      onChange({ comments: value });
     } else {
-      onChange({ [name as BalanceKey]: name === 'comments' ? value : Number(value) });
+      if (name.includes('.')) {
+        const [parent, child] = name.split('.') as [keyof Visit['balance'], string];
+        const currentParentValue = data[parent] || {};
+        onChange({
+          [parent]: {
+            ...currentParentValue,
+            [child]: Number(value)
+          }
+        });
+      } else {
+        onChange({ [name as keyof Visit['balance']]: Number(value) });
+      }
     }
   };
 

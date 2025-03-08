@@ -14,19 +14,43 @@ type GaitKey = keyof Visit['gait'];
 const GaitSection: React.FC<GaitSectionProps> = ({ data, onChange, readOnly }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (readOnly || !onChange) return;
-    const { name, value } = e.target;
-    if (name.includes('.')) {
-      const [parent, child] = name.split('.') as [keyof typeof data, string];
-      onChange({
-        [parent]: {
-          ...(data[parent] as object),
-          [child]: child === 'type' ? value : Number(value)
+    const { name, value, type } = e.target;
+    
+    if (type === 'checkbox') {
+      const fieldName = name.replace('-nt', '');
+      if (name.includes('.')) {
+        const [parent, child] = fieldName.split('.') as [keyof Visit['gait'], string];
+        if (parent === 'gst' || parent === 'sct') {
+          onChange({
+            [parent]: {
+              ...(data[parent] || {}),
+              [child]: (e.target as HTMLInputElement).checked ? 'NT' : ''
+            }
+          });
         }
-      });
+      } else {
+        onChange({ [fieldName as keyof Visit['gait']]: (e.target as HTMLInputElement).checked ? 'NT' : '' });
+      }
+    } else if (name === 'comments') {
+      onChange({ comments: value });
     } else {
-      onChange({ [name as GaitKey]: name === 'comments' ? value : Number(value) });
+      if (name.includes('.')) {
+        const [parent, child] = name.split('.') as [keyof Visit['gait'], string];
+        if (parent === 'gst' || parent === 'sct') {
+          onChange({
+            [parent]: {
+              ...(data[parent] || {}),
+              [child]: child === 'type' ? value : Number(value)
+            }
+          });
+        }
+      } else {
+        onChange({ [name as keyof Visit['gait']]: Number(value) });
+      }
     }
   };
+
+  const isNT = (value: any) => value === 'NT';
 
   return (
     <SectionContainer 
@@ -38,18 +62,32 @@ const GaitSection: React.FC<GaitSectionProps> = ({ data, onChange, readOnly }) =
           <label htmlFor="tug" className="block text-sm font-medium text-gray-700">
             Timed Up-and-Go (sec)
           </label>
-          <div className="mt-1">
+          <div className="mt-1 flex items-center gap-3">
             <input
               type="number"
               name="tug"
               id="tug"
               required
-              value={data.tug || ''}
+              disabled={readOnly || isNT(data.tug)}
+              value={isNT(data.tug) ? '' : (data.tug || '')}
               onChange={handleChange}
-              disabled={readOnly}
-              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
+              className={`${inputStyles} ${readOnly || isNT(data.tug) ? 'bg-gray-50' : ''}`}
               step="0.1"
             />
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="tug-nt"
+                name="tug-nt"
+                checked={isNT(data.tug)}
+                onChange={handleChange}
+                disabled={readOnly}
+                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              />
+              <label htmlFor="tug-nt" className="ml-2 text-sm text-gray-700">
+                NT
+              </label>
+            </div>
           </div>
         </div>
 
@@ -57,18 +95,32 @@ const GaitSection: React.FC<GaitSectionProps> = ({ data, onChange, readOnly }) =
           <label htmlFor="ncw" className="block text-sm font-medium text-gray-700">
             Narrow Corridor Walk (% change)
           </label>
-          <div className="mt-1">
+          <div className="mt-1 flex items-center gap-3">
             <input
               type="number"
               name="ncw"
               id="ncw"
               required
-              value={data.ncw || ''}
+              disabled={readOnly || isNT(data.ncw)}
+              value={isNT(data.ncw) ? '' : (data.ncw || '')}
               onChange={handleChange}
-              disabled={readOnly}
-              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
+              className={`${inputStyles} ${readOnly || isNT(data.ncw) ? 'bg-gray-50' : ''}`}
               step="0.1"
             />
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="ncw-nt"
+                name="ncw-nt"
+                checked={isNT(data.ncw)}
+                onChange={handleChange}
+                disabled={readOnly}
+                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              />
+              <label htmlFor="ncw-nt" className="ml-2 text-sm text-gray-700">
+                NT
+              </label>
+            </div>
           </div>
         </div>
 
@@ -76,18 +128,32 @@ const GaitSection: React.FC<GaitSectionProps> = ({ data, onChange, readOnly }) =
           <label htmlFor="gst.value" className="block text-sm font-medium text-gray-700">
             Gait Speed Test (meters/sec)
           </label>
-          <div className="mt-1">
+          <div className="mt-1 flex items-center gap-3">
             <input
               type="number"
               name="gst.value"
               id="gst.value"
               required
-              value={data.gst?.value || ''}
+              disabled={readOnly || isNT(data.gst?.value)}
+              value={isNT(data.gst?.value) ? '' : (data.gst?.value || '')}
               onChange={handleChange}
-              disabled={readOnly}
-              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
+              className={`${inputStyles} ${readOnly || isNT(data.gst?.value) ? 'bg-gray-50' : ''}`}
               step="0.01"
             />
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="gst.value-nt"
+                name="gst.value-nt"
+                checked={isNT(data.gst?.value)}
+                onChange={handleChange}
+                disabled={readOnly}
+                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              />
+              <label htmlFor="gst.value-nt" className="ml-2 text-sm text-gray-700">
+                NT
+              </label>
+            </div>
           </div>
           <div className={radioGroupStyles}>
             <label className={radioLabelStyles}>
@@ -131,20 +197,34 @@ const GaitSection: React.FC<GaitSectionProps> = ({ data, onChange, readOnly }) =
 
         <div className="sm:col-span-3">
           <label htmlFor="sct.value" className="block text-sm font-medium text-gray-700">
-            Stair Climb (sec/step)
+            Step Climbing Test (steps/min)
           </label>
-          <div className="mt-1">
+          <div className="mt-1 flex items-center gap-3">
             <input
               type="number"
               name="sct.value"
               id="sct.value"
               required
-              value={data.sct?.value || ''}
+              disabled={readOnly || isNT(data.sct?.value)}
+              value={isNT(data.sct?.value) ? '' : (data.sct?.value || '')}
               onChange={handleChange}
-              disabled={readOnly}
-              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
-              step="0.01"
+              className={`${inputStyles} ${readOnly || isNT(data.sct?.value) ? 'bg-gray-50' : ''}`}
+              step="0.1"
             />
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="sct.value-nt"
+                name="sct.value-nt"
+                checked={isNT(data.sct?.value)}
+                onChange={handleChange}
+                disabled={readOnly}
+                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              />
+              <label htmlFor="sct.value-nt" className="ml-2 text-sm text-gray-700">
+                NT
+              </label>
+            </div>
           </div>
           <div className={radioGroupStyles}>
             <label className={radioLabelStyles}>

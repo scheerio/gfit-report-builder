@@ -14,19 +14,41 @@ type EnduranceKey = keyof Visit['endurance'];
 const EnduranceSection: React.FC<EnduranceSectionProps> = ({ data, onChange, readOnly }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (readOnly || !onChange) return;
-    const { name, value } = e.target;
-    if (name.includes('.')) {
-      const [parent, child] = name.split('.') as [keyof typeof data, string];
-      onChange({
-        [parent]: {
-          ...(data[parent] as object),
-          [child]: child === 'type' || child === 'weight' ? value : Number(value)
-        }
-      });
+    const { name, value, type } = e.target;
+    
+    if (type === 'checkbox') {
+      const fieldName = name.replace('-nt', '');
+      if (name.includes('.')) {
+        const [parent, child] = fieldName.split('.') as [keyof Visit['endurance'], string];
+        const currentParentValue = data[parent] || {};
+        onChange({
+          [parent]: {
+            ...currentParentValue,
+            [child]: (e.target as HTMLInputElement).checked ? 'NT' : ''
+          }
+        });
+      } else {
+        onChange({ [fieldName as keyof Visit['endurance']]: (e.target as HTMLInputElement).checked ? 'NT' : '' });
+      }
+    } else if (name === 'comments') {
+      onChange({ comments: value });
     } else {
-      onChange({ [name as EnduranceKey]: name === 'comments' ? value : Number(value) });
+      if (name.includes('.')) {
+        const [parent, child] = name.split('.') as [keyof Visit['endurance'], string];
+        const currentParentValue = data[parent] || {};
+        onChange({
+          [parent]: {
+            ...currentParentValue,
+            [child]: Number(value)
+          }
+        });
+      } else {
+        onChange({ [name as keyof Visit['endurance']]: Number(value) });
+      }
     }
   };
+
+  const isNT = (value: any) => value === 'NT';
 
   return (
     <SectionContainer 
@@ -38,18 +60,31 @@ const EnduranceSection: React.FC<EnduranceSectionProps> = ({ data, onChange, rea
           <label htmlFor="act.right" className="block text-sm font-medium text-gray-700">
             Arm Curl Test - Right (reps)
           </label>
-          <div className="mt-1">
+          <div className="mt-1 flex items-center gap-3">
             <input
               type="number"
               name="act.right"
               id="act.right"
               required
-              value={data.act?.right || ''}
+              disabled={readOnly || isNT(data.act?.right)}
+              value={isNT(data.act?.right) ? '' : (data.act?.right || '')}
               onChange={handleChange}
-              disabled={readOnly}
-              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
-              step="1"
+              className={`${inputStyles} ${readOnly || isNT(data.act?.right) ? 'bg-gray-50' : ''}`}
             />
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="act.right-nt"
+                name="act.right-nt"
+                checked={isNT(data.act?.right)}
+                onChange={handleChange}
+                disabled={readOnly}
+                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              />
+              <label htmlFor="act.right-nt" className="ml-2 text-sm text-gray-700">
+                NT
+              </label>
+            </div>
           </div>
         </div>
 
@@ -57,18 +92,31 @@ const EnduranceSection: React.FC<EnduranceSectionProps> = ({ data, onChange, rea
           <label htmlFor="act.left" className="block text-sm font-medium text-gray-700">
             Arm Curl Test - Left (reps)
           </label>
-          <div className="mt-1">
+          <div className="mt-1 flex items-center gap-3">
             <input
               type="number"
               name="act.left"
               id="act.left"
               required
-              value={data.act?.left || ''}
+              disabled={readOnly || isNT(data.act?.left)}
+              value={isNT(data.act?.left) ? '' : (data.act?.left || '')}
               onChange={handleChange}
-              disabled={readOnly}
-              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
-              step="1"
+              className={`${inputStyles} ${readOnly || isNT(data.act?.left) ? 'bg-gray-50' : ''}`}
             />
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="act.left-nt"
+                name="act.left-nt"
+                checked={isNT(data.act?.left)}
+                onChange={handleChange}
+                disabled={readOnly}
+                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              />
+              <label htmlFor="act.left-nt" className="ml-2 text-sm text-gray-700">
+                NT
+              </label>
+            </div>
           </div>
         </div>
 
@@ -108,18 +156,31 @@ const EnduranceSection: React.FC<EnduranceSectionProps> = ({ data, onChange, rea
           <label htmlFor="sts.value" className="block text-sm font-medium text-gray-700">
             Sit to Stand
           </label>
-          <div className="mt-1">
+          <div className="mt-1 flex items-center gap-3">
             <input
               type="number"
               name="sts.value"
               id="sts.value"
               required
-              value={data.sts?.value || ''}
+              disabled={readOnly || isNT(data.sts?.value)}
+              value={isNT(data.sts?.value) ? '' : (data.sts?.value || '')}
               onChange={handleChange}
-              disabled={readOnly}
-              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
-              step="0.1"
+              className={`${inputStyles} ${readOnly || isNT(data.sts?.value) ? 'bg-gray-50' : ''}`}
             />
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="sts.value-nt"
+                name="sts.value-nt"
+                checked={isNT(data.sts?.value)}
+                onChange={handleChange}
+                disabled={readOnly}
+                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              />
+              <label htmlFor="sts.value-nt" className="ml-2 text-sm text-gray-700">
+                NT
+              </label>
+            </div>
           </div>
           <div className={radioGroupStyles}>
             <label className={radioLabelStyles}>
@@ -153,18 +214,31 @@ const EnduranceSection: React.FC<EnduranceSectionProps> = ({ data, onChange, rea
           <label htmlFor="tls.value" className="block text-sm font-medium text-gray-700">
             Timed Loaded Standing (sec)
           </label>
-          <div className="mt-1">
+          <div className="mt-1 flex items-center gap-3">
             <input
               type="number"
               name="tls.value"
               id="tls.value"
               required
-              value={data.tls?.value || ''}
+              disabled={readOnly || isNT(data.tls?.value)}
+              value={isNT(data.tls?.value) ? '' : (data.tls?.value || '')}
               onChange={handleChange}
-              disabled={readOnly}
-              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
-              step="1"
+              className={`${inputStyles} ${readOnly || isNT(data.tls?.value) ? 'bg-gray-50' : ''}`}
             />
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="tls.value-nt"
+                name="tls.value-nt"
+                checked={isNT(data.tls?.value)}
+                onChange={handleChange}
+                disabled={readOnly}
+                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              />
+              <label htmlFor="tls.value-nt" className="ml-2 text-sm text-gray-700">
+                NT
+              </label>
+            </div>
           </div>
           <div className={radioGroupStyles}>
             <label className={radioLabelStyles}>
@@ -210,18 +284,31 @@ const EnduranceSection: React.FC<EnduranceSectionProps> = ({ data, onChange, rea
           <label htmlFor="uhr.right" className="block text-sm font-medium text-gray-700">
             Unilateral Heel Rise - Right (reps)
           </label>
-          <div className="mt-1">
+          <div className="mt-1 flex items-center gap-3">
             <input
               type="number"
               name="uhr.right"
               id="uhr.right"
               required
-              value={data.uhr?.right || ''}
+              disabled={readOnly || isNT(data.uhr?.right)}
+              value={isNT(data.uhr?.right) ? '' : (data.uhr?.right || '')}
               onChange={handleChange}
-              disabled={readOnly}
-              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
-              step="1"
+              className={`${inputStyles} ${readOnly || isNT(data.uhr?.right) ? 'bg-gray-50' : ''}`}
             />
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="uhr.right-nt"
+                name="uhr.right-nt"
+                checked={isNT(data.uhr?.right)}
+                onChange={handleChange}
+                disabled={readOnly}
+                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              />
+              <label htmlFor="uhr.right-nt" className="ml-2 text-sm text-gray-700">
+                NT
+              </label>
+            </div>
           </div>
         </div>
 
@@ -229,18 +316,31 @@ const EnduranceSection: React.FC<EnduranceSectionProps> = ({ data, onChange, rea
           <label htmlFor="uhr.left" className="block text-sm font-medium text-gray-700">
             Unilateral Heel Rise - Left (reps)
           </label>
-          <div className="mt-1">
+          <div className="mt-1 flex items-center gap-3">
             <input
               type="number"
               name="uhr.left"
               id="uhr.left"
               required
-              value={data.uhr?.left || ''}
+              disabled={readOnly || isNT(data.uhr?.left)}
+              value={isNT(data.uhr?.left) ? '' : (data.uhr?.left || '')}
               onChange={handleChange}
-              disabled={readOnly}
-              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
-              step="1"
+              className={`${inputStyles} ${readOnly || isNT(data.uhr?.left) ? 'bg-gray-50' : ''}`}
             />
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="uhr.left-nt"
+                name="uhr.left-nt"
+                checked={isNT(data.uhr?.left)}
+                onChange={handleChange}
+                disabled={readOnly}
+                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              />
+              <label htmlFor="uhr.left-nt" className="ml-2 text-sm text-gray-700">
+                NT
+              </label>
+            </div>
           </div>
         </div>
 

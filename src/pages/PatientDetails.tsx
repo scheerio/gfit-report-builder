@@ -8,6 +8,7 @@ import { format, formatInTimeZone } from 'date-fns-tz';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { calculateAge } from '../utils/dateUtils';
+import VisitForm from '../components/visit/VisitForm';
 
 interface Patient {
   firstName: string;

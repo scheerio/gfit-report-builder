@@ -1,69 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import Layout from '../components/Layout';
 import { formatInTimeZone } from 'date-fns-tz';
 import { PDFDownloadLink, Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
-
-interface Visit {
-  id: string;
-  date: { toDate: () => Date };
-  clinimetrics: {
-    bmi: number;
-    twd: number;
-    grip: { right: number; left: number };
-    obp: { systolic: number; diastolic: number };
-    comments: string;
-  };
-  flexibility: {
-    pke: { right: number; left: number };
-    csr: { right: number; left: number };
-    bst: { right: number; left: number };
-    tbr: { right: number; left: number };
-    comments: string;
-  };
-  balance: {
-    frt: number;
-    ols: { right: number; left: number };
-    srt: number;
-    pst: { ap: number; ml: number };
-    comments: string;
-  };
-  gait: {
-    tug: number;
-    ncw: number;
-    gst: { value: number; type: '6meter' | '30meter' | '45meter' };
-    sct: { value: number; type: '5step' | '20step' };
-    comments: string;
-  };
-  endurance: {
-    act: { right: number; left: number; weight: '5lbs' | '8lbs' };
-    sts: { value: number; type: '5x' | '30sec' };
-    tls: { value: number; weight: '1lb' | '3lbs' | '5lbs' };
-    uhr: { right: number; left: number };
-    comments: string;
-  };
-  aerobic: {
-    tms: number;
-    mwt: { distance: number; speed: number; type: '2min' | '6min' };
-    ikd: { ue: number; le: number };
-    pws: { right: number; left: number };
-    comments: string;
-  };
-  power: {
-    bicep: { rm: number; pp: number };
-    tricep: { rm: number; pp: number };
-    back: { rm: number; pp: number };
-    chest: { rm: number; pp: number };
-    knee: { rm: number; pp: number };
-    calf: { rm: number; pp: number };
-    leg: { rm: number; pp: number };
-    hip: { right: { rm: number; pp: number }; left: { rm: number; pp: number } };
-    comments: string;
-  };
-}
+import { Visit as VisitType, Patient, Gender, NumericOrNT } from '../types';
+import { getNormativeValue, NormativeRange } from '../utils/normativeValues';
+import { format } from 'date-fns';
 
 // Define styles for PDF
 const styles = StyleSheet.create({
@@ -104,14 +49,45 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     fontWeight: 'bold',
   },
+  patientInfo: {
+    fontSize: 12,
+    marginBottom: 4,
+  },
+  clinicianInfo: {
+    fontSize: 12,
+    marginBottom: 20,
+    color: '#666666',
+  },
 });
 
 // PDF Document Component
-const ComparisonDocument = ({ visits }: { visits: Visit[] }) => (
+const ComparisonDocument = ({ 
+  visits,
+  patient,
+  clinicianName,
+  age
+}: { 
+  visits: VisitType[];
+  patient: Patient;
+  clinicianName: string;
+  age: number;
+}) => (
   <Document>
     <Page size="A4" style={styles.page}>
-      <Text style={styles.title}>Visit Comparison Report</Text>
-      
+      {/* Patient Info Header */}
+      <View style={styles.header}>
+        <Text style={styles.title}>Visit Comparison Report</Text>
+        <Text style={styles.patientInfo}>
+          {patient.lastName}, {patient.firstName} {patient.emrId ? `(EMR ID: ${patient.emrId})` : ''}
+        </Text>
+        <Text style={styles.patientInfo}>
+          {format(patient.dateOfBirth.toDate(), 'M/d/yy')} ({age})
+        </Text>
+        <Text style={styles.clinicianInfo}>
+          Clinician: {clinicianName}
+        </Text>
+      </View>
+
       <View style={styles.row}>
         <Text style={styles.label}>Date</Text>
         {visits.map((visit, i) => (
@@ -350,46 +326,37 @@ const ComparisonDocument = ({ visits }: { visits: Visit[] }) => (
       </View>
 
       {/* Endurance Section */}
-      <Text style={styles.header}>Endurance</Text>
+      <Text style={styles.header}>Muscle Performance - Endurance</Text>
 
       <View style={styles.row}>
-        <Text style={styles.label}>Arm Curl Test - Right</Text>
+        <Text style={styles.label}>Arm Curl Test</Text>
         {visits.map((visit, i) => (
           <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
-            {visit.endurance?.act?.right || '-'} ({visit.endurance?.act?.weight || '-'})
+            {visit.endurance?.act?.right || '-'}
           </Text>
         ))}
       </View>
 
       <View style={styles.row}>
-        <Text style={styles.label}>Arm Curl Test - Left</Text>
+        <Text style={styles.label}>Sit to Stand</Text>
         {visits.map((visit, i) => (
           <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
-            {visit.endurance?.act?.left || '-'} ({visit.endurance?.act?.weight || '-'})
+            {visit.endurance?.sts?.value || '-'}
           </Text>
         ))}
       </View>
 
       <View style={styles.row}>
-        <Text style={styles.label}>Sit-to-Stand Test</Text>
+        <Text style={styles.label}>Timed Loaded Standing</Text>
         {visits.map((visit, i) => (
           <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
-            {visit.endurance?.sts?.value || '-'} ({visit.endurance?.sts?.type || '-'})
+            {visit.endurance?.tls?.value || '-'}
           </Text>
         ))}
       </View>
 
       <View style={styles.row}>
-        <Text style={styles.label}>Toe Lift Series</Text>
-        {visits.map((visit, i) => (
-          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
-            {visit.endurance?.tls?.value || '-'} ({visit.endurance?.tls?.weight || '-'})
-          </Text>
-        ))}
-      </View>
-
-      <View style={styles.row}>
-        <Text style={styles.label}>Upper Hand Reach - Right</Text>
+        <Text style={styles.label}>Unilateral Heel Rise</Text>
         {visits.map((visit, i) => (
           <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
             {visit.endurance?.uhr?.right || '-'}
@@ -397,17 +364,8 @@ const ComparisonDocument = ({ visits }: { visits: Visit[] }) => (
         ))}
       </View>
 
-      <View style={styles.row}>
-        <Text style={styles.label}>Upper Hand Reach - Left</Text>
-        {visits.map((visit, i) => (
-          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
-            {visit.endurance?.uhr?.left || '-'}
-          </Text>
-        ))}
-      </View>
-
       {/* Aerobic Section */}
-      <Text style={styles.header}>Aerobic</Text>
+      <Text style={styles.header}>Aerobic & Endurance</Text>
 
       <View style={styles.row}>
         <Text style={styles.label}>Two Minute Step</Text>
@@ -419,7 +377,7 @@ const ComparisonDocument = ({ visits }: { visits: Visit[] }) => (
       </View>
 
       <View style={styles.row}>
-        <Text style={styles.label}>Modified Walk Test Distance</Text>
+        <Text style={styles.label}>Walk Test</Text>
         {visits.map((visit, i) => (
           <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
             {visit.aerobic?.mwt?.distance || '-'} ({visit.aerobic?.mwt?.type || '-'})
@@ -427,65 +385,11 @@ const ComparisonDocument = ({ visits }: { visits: Visit[] }) => (
         ))}
       </View>
 
-      <View style={styles.row}>
-        <Text style={styles.label}>Modified Walk Test Speed</Text>
-        {visits.map((visit, i) => (
-          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
-            {visit.aerobic?.mwt?.speed || '-'}
-          </Text>
-        ))}
-      </View>
-
-      <View style={styles.row}>
-        <Text style={styles.label}>IKD Upper Extremity</Text>
-        {visits.map((visit, i) => (
-          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
-            {visit.aerobic?.ikd?.ue || '-'}
-          </Text>
-        ))}
-      </View>
-
-      <View style={styles.row}>
-        <Text style={styles.label}>IKD Lower Extremity</Text>
-        {visits.map((visit, i) => (
-          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
-            {visit.aerobic?.ikd?.le || '-'}
-          </Text>
-        ))}
-      </View>
-
-      <View style={styles.row}>
-        <Text style={styles.label}>Partial Wall Sit - Right</Text>
-        {visits.map((visit, i) => (
-          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
-            {visit.aerobic?.pws?.right || '-'}
-          </Text>
-        ))}
-      </View>
-
-      <View style={styles.row}>
-        <Text style={styles.label}>Partial Wall Sit - Left</Text>
-        {visits.map((visit, i) => (
-          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
-            {visit.aerobic?.pws?.left || '-'}
-          </Text>
-        ))}
-      </View>
-
       {/* Power Section */}
-      <Text style={styles.header}>Power</Text>
+      <Text style={styles.header}>Muscle Performance - Power</Text>
 
       <View style={styles.row}>
-        <Text style={styles.label}>Bicep - 1RM</Text>
-        {visits.map((visit, i) => (
-          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
-            {visit.power?.bicep?.rm || '-'}
-          </Text>
-        ))}
-      </View>
-
-      <View style={styles.row}>
-        <Text style={styles.label}>Bicep - Peak Power</Text>
+        <Text style={styles.label}>Bicep Power</Text>
         {visits.map((visit, i) => (
           <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
             {visit.power?.bicep?.pp || '-'}
@@ -493,149 +397,7 @@ const ComparisonDocument = ({ visits }: { visits: Visit[] }) => (
         ))}
       </View>
 
-      <View style={styles.row}>
-        <Text style={styles.label}>Tricep - 1RM</Text>
-        {visits.map((visit, i) => (
-          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
-            {visit.power?.tricep?.rm || '-'}
-          </Text>
-        ))}
-      </View>
-
-      <View style={styles.row}>
-        <Text style={styles.label}>Tricep - Peak Power</Text>
-        {visits.map((visit, i) => (
-          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
-            {visit.power?.tricep?.pp || '-'}
-          </Text>
-        ))}
-      </View>
-
-      <View style={styles.row}>
-        <Text style={styles.label}>Back - 1RM</Text>
-        {visits.map((visit, i) => (
-          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
-            {visit.power?.back?.rm || '-'}
-          </Text>
-        ))}
-      </View>
-
-      <View style={styles.row}>
-        <Text style={styles.label}>Back - Peak Power</Text>
-        {visits.map((visit, i) => (
-          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
-            {visit.power?.back?.pp || '-'}
-          </Text>
-        ))}
-      </View>
-
-      <View style={styles.row}>
-        <Text style={styles.label}>Chest - 1RM</Text>
-        {visits.map((visit, i) => (
-          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
-            {visit.power?.chest?.rm || '-'}
-          </Text>
-        ))}
-      </View>
-
-      <View style={styles.row}>
-        <Text style={styles.label}>Chest - Peak Power</Text>
-        {visits.map((visit, i) => (
-          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
-            {visit.power?.chest?.pp || '-'}
-          </Text>
-        ))}
-      </View>
-
-      <View style={styles.row}>
-        <Text style={styles.label}>Knee - 1RM</Text>
-        {visits.map((visit, i) => (
-          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
-            {visit.power?.knee?.rm || '-'}
-          </Text>
-        ))}
-      </View>
-
-      <View style={styles.row}>
-        <Text style={styles.label}>Knee - Peak Power</Text>
-        {visits.map((visit, i) => (
-          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
-            {visit.power?.knee?.pp || '-'}
-          </Text>
-        ))}
-      </View>
-
-      <View style={styles.row}>
-        <Text style={styles.label}>Calf - 1RM</Text>
-        {visits.map((visit, i) => (
-          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
-            {visit.power?.calf?.rm || '-'}
-          </Text>
-        ))}
-      </View>
-
-      <View style={styles.row}>
-        <Text style={styles.label}>Calf - Peak Power</Text>
-        {visits.map((visit, i) => (
-          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
-            {visit.power?.calf?.pp || '-'}
-          </Text>
-        ))}
-      </View>
-
-      <View style={styles.row}>
-        <Text style={styles.label}>Leg - 1RM</Text>
-        {visits.map((visit, i) => (
-          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
-            {visit.power?.leg?.rm || '-'}
-          </Text>
-        ))}
-      </View>
-
-      <View style={styles.row}>
-        <Text style={styles.label}>Leg - Peak Power</Text>
-        {visits.map((visit, i) => (
-          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
-            {visit.power?.leg?.pp || '-'}
-          </Text>
-        ))}
-      </View>
-
-      <View style={styles.row}>
-        <Text style={styles.label}>Hip Right - 1RM</Text>
-        {visits.map((visit, i) => (
-          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
-            {visit.power?.hip?.right?.rm || '-'}
-          </Text>
-        ))}
-      </View>
-
-      <View style={styles.row}>
-        <Text style={styles.label}>Hip Right - Peak Power</Text>
-        {visits.map((visit, i) => (
-          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
-            {visit.power?.hip?.right?.pp || '-'}
-          </Text>
-        ))}
-      </View>
-
-      <View style={styles.row}>
-        <Text style={styles.label}>Hip Left - 1RM</Text>
-        {visits.map((visit, i) => (
-          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
-            {visit.power?.hip?.left?.rm || '-'}
-          </Text>
-        ))}
-      </View>
-
-      <View style={styles.row}>
-        <Text style={styles.label}>Hip Left - Peak Power</Text>
-        {visits.map((visit, i) => (
-          <Text key={i} style={i === 0 ? styles.value1 : styles.value2}>
-            {visit.power?.hip?.left?.pp || '-'}
-          </Text>
-        ))}
-      </View>
+      {/* Add other power measurements */}
 
       {/* Comments Sections */}
       <Text style={styles.header}>Comments</Text>
@@ -651,21 +413,184 @@ const ComparisonDocument = ({ visits }: { visits: Visit[] }) => (
   </Document>
 );
 
+// Add helper functions
+const formatValue = (value: NumericOrNT) => {
+  if (value === 'NT') return 'NT';
+  if (value === null || value === undefined) return '-';
+  return value.toString();
+};
+
+const formatNormativeValue = (value: NormativeRange) => {
+  if (value.text) return value.text;
+  if (value.min && value.max) return `${value.min}-${value.max}`;
+  if (value.min) return `≥ ${value.min}`;
+  if (value.max) return `≤ ${value.max}`;
+  return '-';
+};
+
+// Add new interface for editable fields
+interface EditableHeaderData {
+  firstName: string;
+  lastName: string;
+  emrId: string;
+  dateOfBirth: string;
+  clinicianName: string;
+}
+
+// Add new component for editable header
+const EditableHeader: React.FC<{
+  patient: Patient;
+  clinicianName: string;
+  onSave: (data: EditableHeaderData) => void;
+}> = ({ patient, clinicianName, onSave }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState<EditableHeaderData>({
+    firstName: patient.firstName,
+    lastName: patient.lastName,
+    emrId: patient.emrId || '',
+    dateOfBirth: format(patient.dateOfBirth.toDate(), 'yyyy-MM-dd'),
+    clinicianName: clinicianName,
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSave(formData);
+    setIsEditing(false);
+  };
+
+  if (!isEditing) {
+    return (
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <h3 className="text-lg font-medium text-gray-900">
+            {patient.lastName}, {patient.firstName} ({patient.emrId ? `EMR ID: ${patient.emrId}` : 'No EMR ID'})
+          </h3>
+          <p className="mt-1 text-sm text-gray-500">
+            {format(patient.dateOfBirth.toDate(), 'M/d/yy')} ({calculateAge(patient.dateOfBirth.toDate())})
+          </p>
+        </div>
+        <div className="text-right">
+          <p className="text-sm text-gray-500">Clinician</p>
+          <p className="text-sm font-medium text-gray-900">{clinicianName}</p>
+          <button
+            onClick={() => setIsEditing(true)}
+            className="mt-2 text-sm text-primary-600 hover:text-primary-500"
+          >
+            Edit
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Last Name</label>
+          <input
+            type="text"
+            value={formData.lastName}
+            onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">First Name</label>
+          <input
+            type="text"
+            value={formData.firstName}
+            onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+          />
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">EMR ID</label>
+          <input
+            type="text"
+            value={formData.emrId}
+            onChange={(e) => setFormData({ ...formData, emrId: e.target.value })}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
+          <input
+            type="date"
+            value={formData.dateOfBirth}
+            onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+          />
+        </div>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700">Clinician Name</label>
+        <input
+          type="text"
+          value={formData.clinicianName}
+          onChange={(e) => setFormData({ ...formData, clinicianName: e.target.value })}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+        />
+      </div>
+      <div className="flex justify-end space-x-3">
+        <button
+          type="button"
+          onClick={() => setIsEditing(false)}
+          className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700"
+        >
+          Save
+        </button>
+      </div>
+    </form>
+  );
+};
+
+// Add helper function for age calculation
+const calculateAge = (dob: Date) => {
+  const today = new Date();
+  const birthDate = new Date(dob);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+};
+
 const VisitComparison = () => {
   const { id: patientId, visit1Id, visit2Id } = useParams<{ id: string; visit1Id: string; visit2Id: string }>();
   const navigate = useNavigate();
   const { currentUser } = useAuth();
-  const [visits, setVisits] = useState<Visit[]>([]);
+  const [patient, setPatient] = useState<Patient | null>(null);
+  const [visits, setVisits] = useState<VisitType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [clinicianName, setClinicianName] = useState(currentUser?.displayName || 'Unknown Clinician');
 
   useEffect(() => {
-    const fetchVisits = async () => {
-      if (!visit1Id || !visit2Id || !currentUser) return;
-
+    const fetchData = async () => {
       try {
-        const visit1Doc = await getDoc(doc(db, 'visits', visit1Id));
-        const visit2Doc = await getDoc(doc(db, 'visits', visit2Id));
+        setLoading(true);
+        
+        // Fetch patient details first
+        const patientDoc = await getDoc(doc(db, 'patients', patientId!));
+        if (!patientDoc.exists()) {
+          setError('Patient not found');
+          return;
+        }
+        setPatient({ id: patientDoc.id, ...patientDoc.data() } as Patient);
+
+        // Then fetch visits
+        const visit1Doc = await getDoc(doc(db, 'visits', visit1Id!));
+        const visit2Doc = await getDoc(doc(db, 'visits', visit2Id!));
 
         if (!visit1Doc.exists() || !visit2Doc.exists()) {
           setError('One or more visits not found');
@@ -673,19 +598,53 @@ const VisitComparison = () => {
         }
 
         setVisits([
-          { id: visit1Doc.id, ...visit1Doc.data() } as Visit,
-          { id: visit2Doc.id, ...visit2Doc.data() } as Visit
+          { id: visit1Doc.id, ...visit1Doc.data() } as VisitType,
+          { id: visit2Doc.id, ...visit2Doc.data() } as VisitType
         ]);
       } catch (err) {
-        console.error('Error fetching visits:', err);
-        setError('Failed to load visits');
+        console.error('Error fetching data:', err);
+        setError('Failed to load data');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchVisits();
-  }, [visit1Id, visit2Id, currentUser]);
+    if (patientId && visit1Id && visit2Id) {
+      fetchData();
+    }
+  }, [patientId, visit1Id, visit2Id]);
+
+  // Add save handler
+  const handleHeaderSave = async (data: EditableHeaderData) => {
+    try {
+      const newDateOfBirth = Timestamp.fromDate(new Date(data.dateOfBirth));
+      
+      // Update patient document
+      await updateDoc(doc(db, 'patients', patientId!), {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        emrId: data.emrId,
+        dateOfBirth: newDateOfBirth,
+      });
+
+      // Update local state
+      setPatient(prev => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          emrId: data.emrId,
+          dateOfBirth: newDateOfBirth,
+        };
+      });
+      
+      setClinicianName(data.clinicianName);
+    } catch (err) {
+      console.error('Error updating patient:', err);
+      // Add error handling UI feedback here
+    }
+  };
 
   if (loading) {
     return (
@@ -709,6 +668,13 @@ const VisitComparison = () => {
     );
   }
 
+  const age = patient ? new Date().getFullYear() - patient.dateOfBirth.toDate().getFullYear() : 0;
+
+  const renderNormativeValue = (measurement: string) => {
+    if (!patient) return '-';
+    return formatNormativeValue(getNormativeValue(measurement, age, patient.gender));
+  };
+
   return (
     <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -721,325 +687,244 @@ const VisitComparison = () => {
                 </h2>
               </div>
               <div className="mt-4 flex md:mt-0 md:ml-4">
-                <PDFDownloadLink
-                  document={<ComparisonDocument visits={visits} />}
-                  fileName="visit-comparison.pdf"
-                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700"
-                >
-                  {({ loading }) => (
-                    <span>
-                      {loading ? 'Generating PDF...' : 'Download PDF'}
-                    </span>
-                  )}
-                </PDFDownloadLink>
+                {patient ? (
+                  <PDFDownloadLink
+                    document={
+                      <ComparisonDocument 
+                        visits={visits} 
+                        patient={patient}
+                        clinicianName={clinicianName}
+                        age={age}
+                      />
+                    }
+                    fileName="visit-comparison.pdf"
+                    className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700"
+                  >
+                    {({ loading }) => (
+                      <span>
+                        {loading ? 'Generating PDF...' : 'Download PDF'}
+                      </span>
+                    )}
+                  </PDFDownloadLink>
+                ) : (
+                  <button
+                    disabled
+                    className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-400 cursor-not-allowed"
+                  >
+                    Loading Patient Data...
+                  </button>
+                )}
               </div>
             </div>
 
             {/* Add a visual comparison table */}
             <div className="bg-white shadow overflow-hidden sm:rounded-lg mb-6">
+              {/* Patient Info Header */}
+              <div className="px-4 py-5 sm:p-6 border-b border-gray-200">
+                {patient && (
+                  <EditableHeader
+                    patient={patient}
+                    clinicianName={clinicianName}
+                    onSave={handleHeaderSave}
+                  />
+                )}
+              </div>
+
+              {/* Rest of comparison table */}
               <div className="px-4 py-5 sm:p-6">
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="font-medium text-gray-500"></div>
+                <div className="grid grid-cols-4 gap-4">
+                  <div className="font-medium text-gray-500">Measurement</div>
+                  <div className="font-medium text-gray-900">Normative Values</div>
                   <div className="font-medium text-gray-900">Visit 1</div>
                   <div className="font-medium text-gray-900">Visit 2</div>
 
-                  <div className="font-medium text-gray-500">Date</div>
+                  {/* Clinimetrics Section */}
+                  <div className="col-span-4 font-bold text-gray-700 mt-4">Clinimetrics</div>
+                  
+                  <div className="font-medium text-gray-500">Body Mass Index</div>
+                  <div className="text-gray-900">{renderNormativeValue('bmi')}</div>
                   {visits.map((visit, i) => (
                     <div key={i} className="text-gray-900">
-                      {formatInTimeZone(visit.date.toDate(), 'America/New_York', 'MMM d, yyyy h:mm a')}
+                      {formatValue(visit.clinimetrics?.bmi ?? null)}
                     </div>
                   ))}
 
-                  <div className="font-medium text-gray-500">FRT Score</div>
+                  <div className="font-medium text-gray-500">Tragus Wall Distance</div>
+                  <div className="text-gray-900">{renderNormativeValue('twd')}</div>
                   {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.balance?.frt || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">OLS Right</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.balance?.ols?.right || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">OLS Left</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.balance?.ols?.left || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">SRT Score</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.balance?.srt || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">PST AP</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.balance?.pst?.ap || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">PST ML</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.balance?.pst?.ml || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">Comments</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.balance?.comments || '-'}</div>
-                  ))}
-
-                  {/* Clinimetrics Section */}
-                  <div className="font-medium text-gray-500 col-span-3 mt-4">Clinimetrics</div>
-                  <div className="font-medium text-gray-500">BMI</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.clinimetrics?.bmi || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">Target Walking Distance</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.clinimetrics?.twd || '-'}</div>
+                    <div key={i} className="text-gray-900">
+                      {formatValue(visit.clinimetrics?.twd ?? null)}
+                    </div>
                   ))}
 
                   <div className="font-medium text-gray-500">Grip Strength - Right</div>
+                  <div className="text-gray-900">{renderNormativeValue('grip')}</div>
                   {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.clinimetrics?.grip?.right || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">Grip Strength - Left</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.clinimetrics?.grip?.left || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">Blood Pressure - Systolic</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.clinimetrics?.obp?.systolic || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">Blood Pressure - Diastolic</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.clinimetrics?.obp?.diastolic || '-'}</div>
+                    <div key={i} className="text-gray-900">
+                      {formatValue(visit.clinimetrics?.grip?.right ?? null)}
+                    </div>
                   ))}
 
                   {/* Flexibility Section */}
-                  <div className="font-medium text-gray-500 col-span-3 mt-4">Flexibility</div>
-                  <div className="font-medium text-gray-500">PKE - Right</div>
+                  <div className="col-span-4 font-bold text-gray-700 mt-4">Flexibility</div>
+
+                  <div className="font-medium text-gray-500">Passive Knee Extension</div>
+                  <div className="text-gray-900">{renderNormativeValue('pke')}</div>
                   {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.flexibility?.pke?.right || '-'}</div>
+                    <div key={i} className="text-gray-900">
+                      {formatValue(visit.flexibility?.pke?.right ?? null)}
+                    </div>
                   ))}
 
-                  <div className="font-medium text-gray-500">PKE - Left</div>
+                  <div className="font-medium text-gray-500">Chair Sit & Reach</div>
+                  <div className="text-gray-900">{renderNormativeValue('csr')}</div>
                   {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.flexibility?.pke?.left || '-'}</div>
+                    <div key={i} className="text-gray-900">
+                      {formatValue(visit.flexibility?.csr?.right ?? null)}
+                    </div>
                   ))}
 
-                  <div className="font-medium text-gray-500">CSR - Right</div>
+                  <div className="font-medium text-gray-500">Back Scratch Test</div>
+                  <div className="text-gray-900">{renderNormativeValue('bst')}</div>
                   {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.flexibility?.csr?.right || '-'}</div>
+                    <div key={i} className="text-gray-900">
+                      {formatValue(visit.flexibility?.bst?.right ?? null)}
+                    </div>
                   ))}
 
-                  <div className="font-medium text-gray-500">CSR - Left</div>
+                  <div className="font-medium text-gray-500">Total Body Rotation</div>
+                  <div className="text-gray-900">{renderNormativeValue('tbr')}</div>
                   {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.flexibility?.csr?.left || '-'}</div>
+                    <div key={i} className="text-gray-900">
+                      {formatValue(visit.flexibility?.tbr?.right ?? null)}
+                    </div>
                   ))}
 
-                  <div className="font-medium text-gray-500">BST - Right</div>
+                  {/* Balance Section */}
+                  <div className="col-span-4 font-bold text-gray-700 mt-4">Balance</div>
+
+                  <div className="font-medium text-gray-500">Functional Reach Test</div>
+                  <div className="text-gray-900">{renderNormativeValue('frt')}</div>
                   {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.flexibility?.bst?.right || '-'}</div>
+                    <div key={i} className="text-gray-900">
+                      {formatValue(visit.balance?.frt ?? null)}
+                    </div>
                   ))}
 
-                  <div className="font-medium text-gray-500">BST - Left</div>
+                  <div className="font-medium text-gray-500">One Leg Stance</div>
+                  <div className="text-gray-900">{renderNormativeValue('ols')}</div>
                   {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.flexibility?.bst?.left || '-'}</div>
+                    <div key={i} className="text-gray-900">
+                      {formatValue(visit.balance?.ols?.right ?? null)}
+                    </div>
                   ))}
 
-                  <div className="font-medium text-gray-500">TBR - Right</div>
+                  <div className="font-medium text-gray-500">Step Reaction Time</div>
+                  <div className="text-gray-900">{renderNormativeValue('srt')}</div>
                   {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.flexibility?.tbr?.right || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">TBR - Left</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.flexibility?.tbr?.left || '-'}</div>
+                    <div key={i} className="text-gray-900">
+                      {formatValue(visit.balance?.srt ?? null)}
+                    </div>
                   ))}
 
                   {/* Gait Section */}
-                  <div className="font-medium text-gray-500 col-span-3 mt-4">Gait & Locomotion</div>
-                  <div className="font-medium text-gray-500">Timed Up-and-Go</div>
+                  <div className="col-span-4 font-bold text-gray-700 mt-4">Gait & Locomotion</div>
+
+                  <div className="font-medium text-gray-500">Timed Up & Go</div>
+                  <div className="text-gray-900">{renderNormativeValue('tug')}</div>
                   {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.gait?.tug || '-'}</div>
+                    <div key={i} className="text-gray-900">
+                      {formatValue(visit.gait?.tug ?? null)}
+                    </div>
                   ))}
 
-                  <div className="font-medium text-gray-500">Normal Comfortable Walk</div>
+                  <div className="font-medium text-gray-500">Narrow Corridor Walk</div>
+                  <div className="text-gray-900">{renderNormativeValue('ncw')}</div>
                   {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.gait?.ncw || '-'}</div>
+                    <div key={i} className="text-gray-900">
+                      {formatValue(visit.gait?.ncw ?? null)}
+                    </div>
                   ))}
 
-                  <div className="font-medium text-gray-500">Gait Speed Test Value</div>
+                  <div className="font-medium text-gray-500">Gait Speed</div>
+                  <div className="text-gray-900">{renderNormativeValue('gaitSpeed')}</div>
                   {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.gait?.gst?.value || '-'} ({visit.gait?.gst?.type || '-'})</div>
+                    <div key={i} className="text-gray-900">
+                      {formatValue(visit.gait?.gst?.value ?? null)}
+                    </div>
                   ))}
 
-                  <div className="font-medium text-gray-500">Stair Climb Test Value</div>
+                  <div className="font-medium text-gray-500">Stair Climb</div>
+                  <div className="text-gray-900">{renderNormativeValue('stairClimb')}</div>
                   {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.gait?.sct?.value || '-'} ({visit.gait?.sct?.type || '-'})</div>
+                    <div key={i} className="text-gray-900">
+                      {formatValue(visit.gait?.sct?.value ?? null)}
+                    </div>
                   ))}
 
                   {/* Endurance Section */}
-                  <div className="font-medium text-gray-500 col-span-3 mt-4">Endurance</div>
-                  <div className="font-medium text-gray-500">Arm Curl Test - Right</div>
+                  <div className="col-span-4 font-bold text-gray-700 mt-4">Muscle Performance - Endurance</div>
+
+                  <div className="font-medium text-gray-500">Arm Curl Test</div>
+                  <div className="text-gray-900">{renderNormativeValue('act')}</div>
                   {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.endurance?.act?.right || '-'} ({visit.endurance?.act?.weight || '-'})</div>
+                    <div key={i} className="text-gray-900">
+                      {formatValue(visit.endurance?.act?.right ?? null)}
+                    </div>
                   ))}
 
-                  <div className="font-medium text-gray-500">Arm Curl Test - Left</div>
+                  <div className="font-medium text-gray-500">Sit to Stand</div>
+                  <div className="text-gray-900">{renderNormativeValue('sts')}</div>
                   {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.endurance?.act?.left || '-'} ({visit.endurance?.act?.weight || '-'})</div>
+                    <div key={i} className="text-gray-900">
+                      {formatValue(visit.endurance?.sts?.value ?? null)}
+                    </div>
                   ))}
 
-                  <div className="font-medium text-gray-500">Sit-to-Stand Test</div>
+                  <div className="font-medium text-gray-500">Timed Loaded Standing</div>
+                  <div className="text-gray-900">{renderNormativeValue('tls')}</div>
                   {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.endurance?.sts?.value || '-'} ({visit.endurance?.sts?.type || '-'})</div>
+                    <div key={i} className="text-gray-900">
+                      {formatValue(visit.endurance?.tls?.value ?? null)}
+                    </div>
                   ))}
 
-                  <div className="font-medium text-gray-500">Toe Lift Series</div>
+                  <div className="font-medium text-gray-500">Unilateral Heel Rise</div>
+                  <div className="text-gray-900">{renderNormativeValue('uhr')}</div>
                   {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.endurance?.tls?.value || '-'} ({visit.endurance?.tls?.weight || '-'})</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">Upper Hand Reach - Right</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.endurance?.uhr?.right || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">Upper Hand Reach - Left</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.endurance?.uhr?.left || '-'}</div>
+                    <div key={i} className="text-gray-900">
+                      {formatValue(visit.endurance?.uhr?.right ?? null)}
+                    </div>
                   ))}
 
                   {/* Aerobic Section */}
-                  <div className="font-medium text-gray-500 col-span-3 mt-4">Aerobic</div>
+                  <div className="col-span-4 font-bold text-gray-700 mt-4">Aerobic & Endurance</div>
+
                   <div className="font-medium text-gray-500">Two Minute Step</div>
+                  <div className="text-gray-900">{renderNormativeValue('tms')}</div>
                   {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.aerobic?.tms || '-'}</div>
+                    <div key={i} className="text-gray-900">
+                      {formatValue(visit.aerobic?.tms ?? null)}
+                    </div>
                   ))}
 
-                  <div className="font-medium text-gray-500">Modified Walk Test Distance</div>
+                  <div className="font-medium text-gray-500">Walk Test</div>
+                  <div className="text-gray-900">{renderNormativeValue('mwt')}</div>
                   {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.aerobic?.mwt?.distance || '-'} ({visit.aerobic?.mwt?.type || '-'})</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">Modified Walk Test Speed</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.aerobic?.mwt?.speed || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">IKD Upper Extremity</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.aerobic?.ikd?.ue || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">IKD Lower Extremity</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.aerobic?.ikd?.le || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">Partial Wall Sit - Right</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.aerobic?.pws?.right || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">Partial Wall Sit - Left</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.aerobic?.pws?.left || '-'}</div>
+                    <div key={i} className="text-gray-900">
+                      {formatValue(visit.aerobic?.mwt?.distance ?? null)}
+                    </div>
                   ))}
 
                   {/* Power Section */}
-                  <div className="font-medium text-gray-500 col-span-3 mt-4">Power</div>
-                  <div className="font-medium text-gray-500">Bicep - 1RM</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.power?.bicep?.rm || '-'}</div>
-                  ))}
+                  <div className="col-span-4 font-bold text-gray-700 mt-4">Muscle Performance - Power</div>
 
-                  <div className="font-medium text-gray-500">Bicep - Peak Power</div>
+                  <div className="font-medium text-gray-500">Bicep Power</div>
+                  <div className="text-gray-900">{renderNormativeValue('bicepPower')}</div>
                   {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.power?.bicep?.pp || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">Tricep - 1RM</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.power?.tricep?.rm || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">Tricep - Peak Power</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.power?.tricep?.pp || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">Back - 1RM</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.power?.back?.rm || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">Back - Peak Power</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.power?.back?.pp || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">Chest - 1RM</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.power?.chest?.rm || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">Chest - Peak Power</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.power?.chest?.pp || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">Knee - 1RM</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.power?.knee?.rm || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">Knee - Peak Power</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.power?.knee?.pp || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">Calf - 1RM</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.power?.calf?.rm || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">Calf - Peak Power</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.power?.calf?.pp || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">Leg - 1RM</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.power?.leg?.rm || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">Leg - Peak Power</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.power?.leg?.pp || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">Hip Right - 1RM</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.power?.hip?.right?.rm || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">Hip Right - Peak Power</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.power?.hip?.right?.pp || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">Hip Left - 1RM</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.power?.hip?.left?.rm || '-'}</div>
-                  ))}
-
-                  <div className="font-medium text-gray-500">Hip Left - Peak Power</div>
-                  {visits.map((visit, i) => (
-                    <div key={i} className="text-gray-900">{visit.power?.hip?.left?.pp || '-'}</div>
+                    <div key={i} className="text-gray-900">
+                      {formatValue(visit.power?.bicep?.pp ?? null)}
+                    </div>
                   ))}
                 </div>
               </div>
@@ -1061,4 +946,4 @@ const VisitComparison = () => {
   );
 };
 
-export default VisitComparison; 
+export default VisitComparison;

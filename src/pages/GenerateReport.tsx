@@ -37,7 +37,9 @@ const GenerateReport = () => {
           date: doc.data().date.toDate(),
           ...doc.data()
         })) as Visit[];
-        setVisits(visitsData.sort((a, b) => b.date.getTime() - a.date.getTime()));
+        setVisits(visitsData.sort((a, b) => 
+          b.date.toDate().getTime() - a.date.toDate().getTime()
+        ));
       } catch (err) {
         console.error('Error fetching data:', err);
         setError('Failed to load data');
@@ -129,7 +131,7 @@ const GenerateReport = () => {
                   <div className="min-w-0 flex-1 sm:flex sm:items-center sm:justify-between">
                     <div>
                       <div className="text-sm font-medium text-primary-600 truncate">
-                        Visit on {visit.date.toLocaleDateString()}
+                        Visit on {visit.date.toDate().toLocaleDateString()}
                       </div>
                     </div>
                   </div>

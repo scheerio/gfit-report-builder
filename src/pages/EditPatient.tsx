@@ -4,20 +4,8 @@ import { doc, getDoc, updateDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import Layout from '../components/Layout';
-
-interface PatientFormData {
-  firstName: string;
-  lastName: string;
-  emrId: string;
-  dateOfBirth: string;
-  gender: string;
-  contactInfo: {
-    phone: string;
-    email: string;
-    address: string;
-  };
-  medicalHistory: string;
-}
+import { PatientFormData, PatientSubmitData } from '../types/Patient';
+import { format } from 'date-fns';
 
 const EditPatient = () => {
   const { id } = useParams<{ id: string }>();
@@ -30,7 +18,7 @@ const EditPatient = () => {
     lastName: '',
     emrId: '',
     dateOfBirth: '',
-    gender: 'male',
+    gender: 'M',
     contactInfo: {
       phone: '',
       email: '',
@@ -83,22 +71,24 @@ const EditPatient = () => {
     fetchPatient();
   }, [id, currentUser]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (data: PatientFormData) => {
     try {
       setLoading(true);
       setError('');
 
-      // Add validation check
-      if (!formData.emrId.trim()) {
+      if (!data.emrId.trim()) {
         setError('EMR ID is required');
         return;
       }
 
+      const submitData: PatientSubmitData = {
+        ...data,
+        dateOfBirth: Timestamp.fromDate(new Date(data.dateOfBirth))
+      };
+
       const patientRef = doc(db, 'patients', id!);
       await updateDoc(patientRef, {
-        ...formData,
-        dateOfBirth: new Date(formData.dateOfBirth),
+        ...submitData,
         updatedAt: Timestamp.now()
       });
 
@@ -116,7 +106,7 @@ const EditPatient = () => {
     if (name.includes('.')) {
       const [parent, child] = name.split('.');
       if (parent === 'contactInfo') {
-        setFormData(prev => ({
+        setFormData((prev: PatientFormData) => ({
           ...prev,
           contactInfo: {
             ...prev.contactInfo,
@@ -125,7 +115,7 @@ const EditPatient = () => {
         }));
       }
     } else {
-      setFormData(prev => ({
+      setFormData((prev: PatientFormData) => ({
         ...prev,
         [name]: value
       }));
@@ -142,11 +132,17 @@ const EditPatient = () => {
     );
   }
 
+  // Convert Timestamp back to string for form initial data
+  const initialData = {
+    ...formData,
+    dateOfBirth: format(new Date(formData.dateOfBirth), 'yyyy-MM-dd'),
+  };
+
   return (
     <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
-          <form onSubmit={handleSubmit} className="space-y-8 divide-y divide-gray-200">
+          <form onSubmit={(e) => { e.preventDefault(); handleSubmit(formData); }} className="space-y-8 divide-y divide-gray-200">
             <div className="space-y-8 divide-y divide-gray-200">
               <div>
                 <div>
@@ -245,8 +241,8 @@ const EditPatient = () => {
                         className="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"
                       >
                         <option value="">Select gender</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
+                        <option value="M">Male</option>
+                        <option value="F">Female</option>
                         <option value="other">Other</option>
                       </select>
                     </div>

@@ -4,6 +4,8 @@ import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import Layout from '../components/Layout';
+import { PatientFormData, PatientSubmitData } from '../types/Patient';
+import { Timestamp } from 'firebase/firestore';
 
 interface ContactInfo {
   phone: string;
@@ -11,17 +13,7 @@ interface ContactInfo {
   address: string;
 }
 
-interface PatientFormData {
-  firstName: string;
-  lastName: string;
-  emrId: string;
-  dateOfBirth: string;
-  gender: 'male' | 'female' | 'other';
-  contactInfo: ContactInfo;
-  medicalHistory: string;
-}
-
-const NewPatient = () => {
+const NewPatient: React.FC = () => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -32,7 +24,7 @@ const NewPatient = () => {
     lastName: '',
     emrId: '',
     dateOfBirth: '',
-    gender: 'male',
+    gender: 'M',
     contactInfo: {
       phone: '',
       email: '',
@@ -41,15 +33,13 @@ const NewPatient = () => {
     medicalHistory: ''
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleSubmit = async (data: PatientSubmitData) => {
     if (!currentUser) {
       setError('You must be logged in to create a patient');
       return;
     }
 
-    if (!formData.emrId.trim()) {
+    if (!data.emrId.trim()) {
       setError('EMR ID is required');
       return;
     }
@@ -59,7 +49,7 @@ const NewPatient = () => {
       setError('');
 
       const newPatient = {
-        ...formData,
+        ...data,
         therapistId: currentUser.uid,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -80,7 +70,7 @@ const NewPatient = () => {
     if (name.includes('.')) {
       const [parent, child] = name.split('.');
       if (parent === 'contactInfo') {
-        setFormData(prev => ({
+        setFormData((prev: PatientFormData) => ({
           ...prev,
           contactInfo: {
             ...prev.contactInfo,
@@ -89,18 +79,29 @@ const NewPatient = () => {
         }));
       }
     } else {
-      setFormData(prev => ({
+      setFormData((prev: PatientFormData) => ({
         ...prev,
         [name]: value
       }));
     }
   };
 
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+    const submitData: PatientSubmitData = {
+      ...formData,
+      dateOfBirth: Timestamp.fromDate(new Date(formData.dateOfBirth))
+    };
+    
+    await handleSubmit(submitData);
+  };
+
   return (
     <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
-          <form onSubmit={handleSubmit} className="space-y-8 divide-y divide-gray-200">
+          <form onSubmit={handleFormSubmit} className="space-y-8 divide-y divide-gray-200">
             {error && (
               <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-4">
                 <div className="flex">
@@ -207,8 +208,8 @@ const NewPatient = () => {
                         onChange={handleChange}
                         className="max-w-lg block w-full shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:max-w-xs sm:text-sm border-gray-300 rounded-md"
                       >
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
+                        <option value="M">Male</option>
+                        <option value="F">Female</option>
                         <option value="other">Other</option>
                       </select>
                     </div>

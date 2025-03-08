@@ -1,5 +1,7 @@
 import { Timestamp } from 'firebase/firestore';
 
+export type NumericOrNT = number | 'NT' | null;
+
 export interface Visit {
   id: string;
   patientId: string;
@@ -8,11 +10,11 @@ export interface Visit {
   
   // Clinimetrics
   clinimetrics: {
-    bmi: number | null;
+    bmi: NumericOrNT;
     twd: number | null; // Tragus Wall Distance (cm)
-    grip: {
-      right: number | null;
-      left: number | null;
+    grip?: {
+      right: NumericOrNT;
+      left: NumericOrNT;
     }; // Grip Strength (lbs)
     obp: {
       systolic: number | null;

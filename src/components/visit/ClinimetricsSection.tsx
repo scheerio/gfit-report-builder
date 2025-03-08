@@ -22,27 +22,44 @@ export const ClinimetricsSection: React.FC<ClinimetricsSectionProps> = ({
     
     if (type === 'checkbox') {
       const fieldName = name.replace('-nt', '');
-      onChange({
-        [fieldName]: (e.target as HTMLInputElement).checked ? 'NT' : ''
-      });
+      if (name.includes('.')) {
+        const [parent, child] = fieldName.split('.') as [keyof Visit['clinimetrics'], string];
+        const currentParentValue = data[parent] || {};
+        onChange({
+          ...data,
+          [parent]: {
+            ...currentParentValue,
+            [child]: (e.target as HTMLInputElement).checked ? 'NT' : ''
+          }
+        });
+      } else {
+        onChange({
+          ...data,
+          [fieldName as keyof Visit['clinimetrics']]: (e.target as HTMLInputElement).checked ? 'NT' : ''
+        });
+      }
     } else if (name === 'comments') {
-      onChange({ [name]: value });
+      onChange({ ...data, comments: value });
     } else {
       if (name.includes('.')) {
-        const [parent, child] = name.split('.') as [keyof typeof data, string];
+        const [parent, child] = name.split('.') as [keyof Visit['clinimetrics'], string];
+        const currentParentValue = data[parent] || {};
         onChange({
+          ...data,
           [parent]: {
-            ...(data[parent] as object),
+            ...currentParentValue,
             [child]: Number(value)
           }
         });
       } else {
-        onChange({ [name]: Number(value) });
+        onChange({ ...data, [name as keyof Visit['clinimetrics']]: Number(value) });
       }
     }
   };
 
-  const isNT = (value: any) => value === 'NT';
+  const isNT = (value: number | null | undefined | 'NT'): boolean => {
+    return value === 'NT';
+  };
 
   return (
     <SectionContainer 

@@ -34,6 +34,7 @@ const GenerateReport = () => {
         const visitsSnapshot = await getDocs(visitsQuery);
         const visitsData = visitsSnapshot.docs.map(doc => ({
           id: doc.id,
+          date: doc.data().date.toDate(),
           ...doc.data()
         })) as Visit[];
         setVisits(visitsData.sort((a, b) => b.date.getTime() - a.date.getTime()));
@@ -128,7 +129,7 @@ const GenerateReport = () => {
                   <div className="min-w-0 flex-1 sm:flex sm:items-center sm:justify-between">
                     <div>
                       <div className="text-sm font-medium text-primary-600 truncate">
-                        Visit on {new Date(visit.date).toLocaleDateString()}
+                        Visit on {visit.date.toLocaleDateString()}
                       </div>
                     </div>
                   </div>

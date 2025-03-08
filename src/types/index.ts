@@ -30,6 +30,8 @@ export interface Patient {
   updatedAt: Date;
 }
 
+type NumericOrNT = number | 'NT' | null;
+
 export interface Visit {
   id: string;
   patientId: string;
@@ -39,19 +41,19 @@ export interface Visit {
   testYear: number;
   
   clinimetrics: {
-    bmi: number;
-    twd: number;
-    grip: { right: number; left: number };
-    obp: { systolic: number; diastolic: number };
+    bmi: NumericOrNT;
+    twd: NumericOrNT;
+    grip: { right: NumericOrNT; left: NumericOrNT };
+    obp: { systolic: NumericOrNT; diastolic: NumericOrNT };
     comments: string;
     subtotal?: number;
   };
   
   flexibility: {
-    pke: { right: number; left: number };
-    csr: { right: number; left: number };
-    bst: { right: number; left: number };
-    tbr: { right: number; left: number };
+    pke: { right: NumericOrNT; left: NumericOrNT };
+    csr: { right: NumericOrNT; left: NumericOrNT };
+    bst: { right: NumericOrNT; left: NumericOrNT };
+    tbr: { right: NumericOrNT; left: NumericOrNT };
     comments: string;
     subtotal?: number;
   };

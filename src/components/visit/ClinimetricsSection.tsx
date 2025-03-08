@@ -47,6 +47,7 @@ const ClinimetricsSection: React.FC<ClinimetricsSectionProps> = ({
               type="number"
               name="bmi"
               id="bmi"
+              required
               value={data.bmi || ''}
               onChange={handleChange}
               disabled={readOnly}
@@ -65,6 +66,7 @@ const ClinimetricsSection: React.FC<ClinimetricsSectionProps> = ({
               type="number"
               name="twd"
               id="twd"
+              required
               value={data.twd || ''}
               onChange={handleChange}
               disabled={readOnly}
@@ -83,6 +85,7 @@ const ClinimetricsSection: React.FC<ClinimetricsSectionProps> = ({
               type="number"
               name="grip.right"
               id="grip.right"
+              required
               value={data.grip?.right || ''}
               onChange={handleChange}
               disabled={readOnly}
@@ -100,6 +103,7 @@ const ClinimetricsSection: React.FC<ClinimetricsSectionProps> = ({
               type="number"
               name="grip.left"
               id="grip.left"
+              required
               value={data.grip?.left || ''}
               onChange={handleChange}
               disabled={readOnly}
@@ -117,6 +121,7 @@ const ClinimetricsSection: React.FC<ClinimetricsSectionProps> = ({
               type="number"
               name="obp.systolic"
               id="obp.systolic"
+              required
               value={data.obp?.systolic || ''}
               onChange={handleChange}
               disabled={readOnly}
@@ -134,6 +139,7 @@ const ClinimetricsSection: React.FC<ClinimetricsSectionProps> = ({
               type="number"
               name="obp.diastolic"
               id="obp.diastolic"
+              required
               value={data.obp?.diastolic || ''}
               onChange={handleChange}
               disabled={readOnly}

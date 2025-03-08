@@ -43,11 +43,12 @@ const AerobicSection: React.FC<AerobicSectionProps> = ({ data, onChange, readOnl
               type="number"
               name="tms"
               id="tms"
+              required
               value={data.tms || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
-              readOnly={readOnly}
             />
           </div>
         </div>
@@ -61,11 +62,12 @@ const AerobicSection: React.FC<AerobicSectionProps> = ({ data, onChange, readOnl
               type="number"
               name="mwt.distance"
               id="mwt.distance"
+              required
               value={data.mwt?.distance || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="0.1"
-              readOnly={readOnly}
             />
           </div>
         </div>
@@ -79,11 +81,12 @@ const AerobicSection: React.FC<AerobicSectionProps> = ({ data, onChange, readOnl
               type="number"
               name="mwt.speed"
               id="mwt.speed"
+              required
               value={data.mwt?.speed || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="0.1"
-              readOnly={readOnly}
             />
           </div>
           <div className={radioGroupStyles}>
@@ -123,11 +126,12 @@ const AerobicSection: React.FC<AerobicSectionProps> = ({ data, onChange, readOnl
               type="number"
               name="ikd.ue"
               id="ikd.ue"
+              required
               value={data.ikd?.ue || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="0.1"
-              readOnly={readOnly}
             />
           </div>
         </div>
@@ -141,11 +145,12 @@ const AerobicSection: React.FC<AerobicSectionProps> = ({ data, onChange, readOnl
               type="number"
               name="ikd.le"
               id="ikd.le"
+              required
               value={data.ikd?.le || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="0.1"
-              readOnly={readOnly}
             />
           </div>
         </div>
@@ -159,11 +164,12 @@ const AerobicSection: React.FC<AerobicSectionProps> = ({ data, onChange, readOnl
               type="number"
               name="pws.right"
               id="pws.right"
+              required
               value={data.pws?.right || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
-              readOnly={readOnly}
             />
           </div>
         </div>
@@ -177,11 +183,12 @@ const AerobicSection: React.FC<AerobicSectionProps> = ({ data, onChange, readOnl
               type="number"
               name="pws.left"
               id="pws.left"
+              required
               value={data.pws?.left || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
-              readOnly={readOnly}
             />
           </div>
         </div>

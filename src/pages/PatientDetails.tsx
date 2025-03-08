@@ -181,6 +181,18 @@ const PatientDetails = () => {
     navigate(`/patients/${id}/compare/${selectedVisits[0]}/${selectedVisits[1]}`);
   };
 
+  const formatDate = (timestamp: any) => {
+    if (!timestamp) return '';
+    if (timestamp instanceof Date) {
+      return format(timestamp, 'MM/dd/yyyy');
+    }
+    // Handle Firestore Timestamp
+    if (timestamp.seconds) {
+      return format(new Date(timestamp.seconds * 1000), 'MM/dd/yyyy');
+    }
+    return format(new Date(timestamp), 'MM/dd/yyyy');
+  };
+
   if (loading) {
     return (
       <Layout>
@@ -258,7 +270,7 @@ const PatientDetails = () => {
                 <div className="sm:col-span-1">
                   <dt className="text-sm font-medium text-gray-500">Date of Birth</dt>
                   <dd className="mt-1 text-sm text-gray-900">
-                    {patient.dateOfBirth} ({calculateAge(patient.dateOfBirth)} years old)
+                    {formatDate(patient.dateOfBirth)}
                   </dd>
                 </div>
                 <div className="sm:col-span-1">

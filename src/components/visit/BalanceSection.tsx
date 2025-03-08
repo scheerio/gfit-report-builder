@@ -43,11 +43,12 @@ const BalanceSection: React.FC<BalanceSectionProps> = ({ data, onChange, readOnl
               type="number"
               name="frt"
               id="frt"
+              required
               value={data.frt || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="0.1"
-              readOnly={readOnly}
             />
           </div>
         </div>
@@ -61,11 +62,12 @@ const BalanceSection: React.FC<BalanceSectionProps> = ({ data, onChange, readOnl
               type="number"
               name="ols.right"
               id="ols.right"
+              required
               value={data.ols?.right || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
-              readOnly={readOnly}
             />
           </div>
         </div>
@@ -79,11 +81,12 @@ const BalanceSection: React.FC<BalanceSectionProps> = ({ data, onChange, readOnl
               type="number"
               name="ols.left"
               id="ols.left"
+              required
               value={data.ols?.left || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
-              readOnly={readOnly}
             />
           </div>
         </div>
@@ -97,11 +100,12 @@ const BalanceSection: React.FC<BalanceSectionProps> = ({ data, onChange, readOnl
               type="number"
               name="srt"
               id="srt"
+              required
               value={data.srt || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
-              readOnly={readOnly}
             />
           </div>
         </div>
@@ -115,11 +119,12 @@ const BalanceSection: React.FC<BalanceSectionProps> = ({ data, onChange, readOnl
               type="number"
               name="pst.ap"
               id="pst.ap"
+              required
               value={data.pst?.ap || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
-              readOnly={readOnly}
             />
           </div>
         </div>
@@ -133,11 +138,12 @@ const BalanceSection: React.FC<BalanceSectionProps> = ({ data, onChange, readOnl
               type="number"
               name="pst.ml"
               id="pst.ml"
+              required
               value={data.pst?.ml || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
-              readOnly={readOnly}
             />
           </div>
         </div>

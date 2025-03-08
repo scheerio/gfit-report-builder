@@ -43,11 +43,12 @@ const EnduranceSection: React.FC<EnduranceSectionProps> = ({ data, onChange, rea
               type="number"
               name="act.right"
               id="act.right"
+              required
               value={data.act?.right || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
-              readOnly={readOnly}
             />
           </div>
         </div>
@@ -61,11 +62,12 @@ const EnduranceSection: React.FC<EnduranceSectionProps> = ({ data, onChange, rea
               type="number"
               name="act.left"
               id="act.left"
+              required
               value={data.act?.left || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
-              readOnly={readOnly}
             />
           </div>
         </div>
@@ -111,11 +113,12 @@ const EnduranceSection: React.FC<EnduranceSectionProps> = ({ data, onChange, rea
               type="number"
               name="sts.value"
               id="sts.value"
+              required
               value={data.sts?.value || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="0.1"
-              readOnly={readOnly}
             />
           </div>
           <div className={radioGroupStyles}>
@@ -155,11 +158,12 @@ const EnduranceSection: React.FC<EnduranceSectionProps> = ({ data, onChange, rea
               type="number"
               name="tls.value"
               id="tls.value"
+              required
               value={data.tls?.value || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
-              readOnly={readOnly}
             />
           </div>
           <div className={radioGroupStyles}>
@@ -211,11 +215,12 @@ const EnduranceSection: React.FC<EnduranceSectionProps> = ({ data, onChange, rea
               type="number"
               name="uhr.right"
               id="uhr.right"
+              required
               value={data.uhr?.right || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
-              readOnly={readOnly}
             />
           </div>
         </div>
@@ -229,11 +234,12 @@ const EnduranceSection: React.FC<EnduranceSectionProps> = ({ data, onChange, rea
               type="number"
               name="uhr.left"
               id="uhr.left"
+              required
               value={data.uhr?.left || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
-              readOnly={readOnly}
             />
           </div>
         </div>

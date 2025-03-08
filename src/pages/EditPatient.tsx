@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import Layout from '../components/Layout';
@@ -51,11 +51,31 @@ const EditPatient = () => {
         }
 
         const patientData = patientDoc.data();
-        setFormData(patientData as PatientFormData);
+        
+        // Create a properly typed object
+        const formattedData: PatientFormData = {
+          firstName: patientData.firstName || '',
+          lastName: patientData.lastName || '',
+          emrId: patientData.emrId || '',
+          gender: patientData.gender || '',
+          dateOfBirth: patientData.dateOfBirth instanceof Date 
+            ? patientData.dateOfBirth.toISOString().split('T')[0]
+            : patientData.dateOfBirth.seconds 
+              ? new Date(patientData.dateOfBirth.seconds * 1000).toISOString().split('T')[0]
+              : new Date(patientData.dateOfBirth).toISOString().split('T')[0],
+          contactInfo: {
+            phone: patientData.contactInfo?.phone || '',
+            email: patientData.contactInfo?.email || '',
+            address: patientData.contactInfo?.address || '',
+          },
+          medicalHistory: patientData.medicalHistory || ''
+        };
+
+        setFormData(formattedData);
+        setLoading(false);
       } catch (err) {
         console.error('Error fetching patient:', err);
         setError('Failed to load patient');
-      } finally {
         setLoading(false);
       }
     };
@@ -65,14 +85,23 @@ const EditPatient = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!id || !currentUser) return;
-
     try {
       setLoading(true);
-      await updateDoc(doc(db, 'patients', id), {
+      setError('');
+
+      // Add validation check
+      if (!formData.emrId.trim()) {
+        setError('EMR ID is required');
+        return;
+      }
+
+      const patientRef = doc(db, 'patients', id!);
+      await updateDoc(patientRef, {
         ...formData,
-        updatedAt: new Date()
+        dateOfBirth: new Date(formData.dateOfBirth),
+        updatedAt: Timestamp.now()
       });
+
       navigate(`/patients/${id}`);
     } catch (err) {
       console.error('Error updating patient:', err);
@@ -143,6 +172,7 @@ const EditPatient = () => {
                         type="text"
                         name="firstName"
                         id="firstName"
+                        required
                         value={formData.firstName}
                         onChange={handleChange}
                         className="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"
@@ -159,6 +189,7 @@ const EditPatient = () => {
                         type="text"
                         name="lastName"
                         id="lastName"
+                        required
                         value={formData.lastName}
                         onChange={handleChange}
                         className="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"
@@ -175,6 +206,7 @@ const EditPatient = () => {
                         type="text"
                         name="emrId"
                         id="emrId"
+                        required
                         value={formData.emrId}
                         onChange={handleChange}
                         className="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"
@@ -191,6 +223,7 @@ const EditPatient = () => {
                         type="date"
                         name="dateOfBirth"
                         id="dateOfBirth"
+                        required
                         value={formData.dateOfBirth}
                         onChange={handleChange}
                         className="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"
@@ -206,10 +239,12 @@ const EditPatient = () => {
                       <select
                         id="gender"
                         name="gender"
+                        required
                         value={formData.gender}
                         onChange={handleChange}
                         className="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"
                       >
+                        <option value="">Select gender</option>
                         <option value="male">Male</option>
                         <option value="female">Female</option>
                         <option value="other">Other</option>

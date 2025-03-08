@@ -49,7 +49,7 @@ const BalanceSection: React.FC<BalanceSectionProps> = ({ data, onChange, readOnl
   };
 
   const isNT = (value: number | null | undefined | 'NT'): boolean => {
-    return value === 'NT' || value === null || value === undefined;
+    return value === 'NT';
   };
 
   return (

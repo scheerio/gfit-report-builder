@@ -47,11 +47,12 @@ const FlexibilitySection: React.FC<FlexibilitySectionProps> = ({
               type="number"
               name="pke.right"
               id="pke.right"
+              required
               value={data.pke?.right || ''}
               onChange={handleChange}
               disabled={readOnly}
               className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
-              step="1"
+              step="0.1"
             />
           </div>
         </div>
@@ -65,11 +66,12 @@ const FlexibilitySection: React.FC<FlexibilitySectionProps> = ({
               type="number"
               name="pke.left"
               id="pke.left"
+              required
               value={data.pke?.left || ''}
               onChange={handleChange}
               disabled={readOnly}
               className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
-              step="1"
+              step="0.1"
             />
           </div>
         </div>
@@ -83,6 +85,7 @@ const FlexibilitySection: React.FC<FlexibilitySectionProps> = ({
               type="number"
               name="csr.right"
               id="csr.right"
+              required
               value={data.csr?.right || ''}
               onChange={handleChange}
               disabled={readOnly}
@@ -101,6 +104,7 @@ const FlexibilitySection: React.FC<FlexibilitySectionProps> = ({
               type="number"
               name="csr.left"
               id="csr.left"
+              required
               value={data.csr?.left || ''}
               onChange={handleChange}
               disabled={readOnly}
@@ -119,6 +123,7 @@ const FlexibilitySection: React.FC<FlexibilitySectionProps> = ({
               type="number"
               name="bst.right"
               id="bst.right"
+              required
               value={data.bst?.right || ''}
               onChange={handleChange}
               disabled={readOnly}
@@ -137,6 +142,7 @@ const FlexibilitySection: React.FC<FlexibilitySectionProps> = ({
               type="number"
               name="bst.left"
               id="bst.left"
+              required
               value={data.bst?.left || ''}
               onChange={handleChange}
               disabled={readOnly}
@@ -155,6 +161,7 @@ const FlexibilitySection: React.FC<FlexibilitySectionProps> = ({
               type="number"
               name="tbr.right"
               id="tbr.right"
+              required
               value={data.tbr?.right || ''}
               onChange={handleChange}
               disabled={readOnly}
@@ -172,6 +179,7 @@ const FlexibilitySection: React.FC<FlexibilitySectionProps> = ({
               type="number"
               name="tbr.left"
               id="tbr.left"
+              required
               value={data.tbr?.left || ''}
               onChange={handleChange}
               disabled={readOnly}

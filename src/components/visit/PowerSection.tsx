@@ -55,9 +55,10 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange, readOnly })
               type="number"
               name="bicep.rm"
               id="bicep.rm"
+              required
               value={data.bicep?.rm || ''}
               onChange={handleChange}
-              className={inputStyles}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
               disabled={readOnly}
             />
@@ -73,9 +74,10 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange, readOnly })
               type="number"
               name="bicep.pp"
               id="bicep.pp"
+              required
               value={data.bicep?.pp || ''}
               onChange={handleChange}
-              className={inputStyles}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
               disabled={readOnly}
             />
@@ -91,9 +93,10 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange, readOnly })
               type="number"
               name="tricep.rm"
               id="tricep.rm"
+              required
               value={data.tricep?.rm || ''}
               onChange={handleChange}
-              className={inputStyles}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
               disabled={readOnly}
             />
@@ -109,9 +112,10 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange, readOnly })
               type="number"
               name="tricep.pp"
               id="tricep.pp"
+              required
               value={data.tricep?.pp || ''}
               onChange={handleChange}
-              className={inputStyles}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
               disabled={readOnly}
             />
@@ -127,9 +131,10 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange, readOnly })
               type="number"
               name="back.rm"
               id="back.rm"
+              required
               value={data.back?.rm || ''}
               onChange={handleChange}
-              className={inputStyles}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
               disabled={readOnly}
             />
@@ -145,9 +150,10 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange, readOnly })
               type="number"
               name="back.pp"
               id="back.pp"
+              required
               value={data.back?.pp || ''}
               onChange={handleChange}
-              className={inputStyles}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
               disabled={readOnly}
             />
@@ -163,9 +169,10 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange, readOnly })
               type="number"
               name="chest.rm"
               id="chest.rm"
+              required
               value={data.chest?.rm || ''}
               onChange={handleChange}
-              className={inputStyles}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
               disabled={readOnly}
             />
@@ -181,9 +188,10 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange, readOnly })
               type="number"
               name="chest.pp"
               id="chest.pp"
+              required
               value={data.chest?.pp || ''}
               onChange={handleChange}
-              className={inputStyles}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
               disabled={readOnly}
             />
@@ -199,9 +207,10 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange, readOnly })
               type="number"
               name="knee.rm"
               id="knee.rm"
+              required
               value={data.knee?.rm || ''}
               onChange={handleChange}
-              className={inputStyles}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
               disabled={readOnly}
             />
@@ -217,9 +226,10 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange, readOnly })
               type="number"
               name="knee.pp"
               id="knee.pp"
+              required
               value={data.knee?.pp || ''}
               onChange={handleChange}
-              className={inputStyles}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
               disabled={readOnly}
             />
@@ -235,9 +245,10 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange, readOnly })
               type="number"
               name="calf.rm"
               id="calf.rm"
+              required
               value={data.calf?.rm || ''}
               onChange={handleChange}
-              className={inputStyles}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
               disabled={readOnly}
             />
@@ -253,9 +264,10 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange, readOnly })
               type="number"
               name="calf.pp"
               id="calf.pp"
+              required
               value={data.calf?.pp || ''}
               onChange={handleChange}
-              className={inputStyles}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
               disabled={readOnly}
             />
@@ -271,9 +283,10 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange, readOnly })
               type="number"
               name="leg.rm"
               id="leg.rm"
+              required
               value={data.leg?.rm || ''}
               onChange={handleChange}
-              className={inputStyles}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
               disabled={readOnly}
             />
@@ -289,9 +302,10 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange, readOnly })
               type="number"
               name="leg.pp"
               id="leg.pp"
+              required
               value={data.leg?.pp || ''}
               onChange={handleChange}
-              className={inputStyles}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
               disabled={readOnly}
             />
@@ -307,9 +321,10 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange, readOnly })
               type="number"
               name="hip.right.rm"
               id="hip.right.rm"
+              required
               value={data.hip?.right?.rm || ''}
               onChange={handleChange}
-              className={inputStyles}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
               disabled={readOnly}
             />
@@ -325,9 +340,10 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange, readOnly })
               type="number"
               name="hip.right.pp"
               id="hip.right.pp"
+              required
               value={data.hip?.right?.pp || ''}
               onChange={handleChange}
-              className={inputStyles}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
               disabled={readOnly}
             />
@@ -343,9 +359,10 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange, readOnly })
               type="number"
               name="hip.left.rm"
               id="hip.left.rm"
+              required
               value={data.hip?.left?.rm || ''}
               onChange={handleChange}
-              className={inputStyles}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
               disabled={readOnly}
             />
@@ -361,9 +378,10 @@ const PowerSection: React.FC<PowerSectionProps> = ({ data, onChange, readOnly })
               type="number"
               name="hip.left.pp"
               id="hip.left.pp"
+              required
               value={data.hip?.left?.pp || ''}
               onChange={handleChange}
-              className={inputStyles}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="1"
               disabled={readOnly}
             />

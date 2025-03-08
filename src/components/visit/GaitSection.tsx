@@ -43,11 +43,12 @@ const GaitSection: React.FC<GaitSectionProps> = ({ data, onChange, readOnly }) =
               type="number"
               name="tug"
               id="tug"
+              required
               value={data.tug || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="0.1"
-              readOnly={readOnly}
             />
           </div>
         </div>
@@ -61,11 +62,12 @@ const GaitSection: React.FC<GaitSectionProps> = ({ data, onChange, readOnly }) =
               type="number"
               name="ncw"
               id="ncw"
+              required
               value={data.ncw || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="0.1"
-              readOnly={readOnly}
             />
           </div>
         </div>
@@ -79,11 +81,12 @@ const GaitSection: React.FC<GaitSectionProps> = ({ data, onChange, readOnly }) =
               type="number"
               name="gst.value"
               id="gst.value"
+              required
               value={data.gst?.value || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="0.01"
-              readOnly={readOnly}
             />
           </div>
           <div className={radioGroupStyles}>
@@ -135,11 +138,12 @@ const GaitSection: React.FC<GaitSectionProps> = ({ data, onChange, readOnly }) =
               type="number"
               name="sct.value"
               id="sct.value"
+              required
               value={data.sct?.value || ''}
               onChange={handleChange}
-              className={inputStyles}
+              disabled={readOnly}
+              className={`${inputStyles} ${readOnly ? 'bg-gray-50' : ''}`}
               step="0.01"
-              readOnly={readOnly}
             />
           </div>
           <div className={radioGroupStyles}>
@@ -181,8 +185,8 @@ const GaitSection: React.FC<GaitSectionProps> = ({ data, onChange, readOnly }) =
               rows={3}
               value={data.comments || ''}
               onChange={handleChange}
-              className={textareaStyles}
-              readOnly={readOnly}
+              disabled={readOnly}
+              className={`${textareaStyles} ${readOnly ? 'bg-gray-50' : ''}`}
             />
           </div>
         </div>
